@@ -1,0 +1,41 @@
+<resources>
+    <string name="app_name">Memo</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string-array name="menu_titles">
+        <item>Home</item>
+        <item>Settings</item>
+        <item>About</item>
+    </string-array>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="about">Test application created to learn android programming.\n
+        <b>Author:</b> Vladimir Mikhalenko</string>
+    <string name="action_add">Add</string>
+    <string name="delete">Delete</string>
+    <string name="name">Name</string>
+    <string name="action_save">Save</string>
+    <string name="description">Description</string>
+    <string name="date_time_dialog_title"></string>
+    <string name="alert_msg_save">Save changes?</string>
+    <string name="alert_btn_no">No</string>
+    <string name="alert_btn_save">Save</string>
+    <string name="text_view_date">Date</string>
+    <string name="action_delete">Delete</string>
+    <string name="alert_msg_delete">Delete current note?</string>
+    <string name="alert_btn_delete">Delete</string>
+    <string name="title_note_edit">Edit note</string>
+    <string name="title_note_new">New note</string>
+    <string name="title_home">Notes list</string>
+    <string name="action_delete_all">Delete all</string>
+    <string name="alert_msg_delete_all">Delete all notes?</string>
+
+    <string name="pref_autosave_not_empty_notes_key">auto_save_not_empy_notes</string>
+    <string name="pref_autosave_not_empty_notes_title">Auto save</string>
+    <string name="pref_autosave_not_empty_notes_summary">Auto save not empty notes</string>
+
+    <string name="pref_header_global">Global</string>
+    <string name="pref_header_global_summary">Global preferences</string>
+</resources>
