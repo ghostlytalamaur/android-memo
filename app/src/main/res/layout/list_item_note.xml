@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="4dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/note_list_item_date"
+        android:text="Date long long"
+        android:padding="@dimen/small_margin"
+        android:maxLines="1"
+        android:layout_gravity="center"
+        android:layout_alignParentRight="true"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/note_list_item_title"
+        android:text="Title"
+        android:textStyle="bold"
+        android:textSize="@dimen/abc_text_size_title_material"
+        android:layout_toLeftOf="@id/note_list_item_date"
+        android:padding="@dimen/small_margin"
+        android:maxLines="1"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/note_list_item_cbComplited"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/note_list_item_description"
+        android:text="Description"
+        android:padding="@dimen/small_margin"
+        android:maxLines="1"
+        android:layout_below="@id/note_list_item_title"
+        android:layout_toLeftOf="@id/note_list_item_date"
+        android:layout_alignStart="@+id/note_list_item_title"/>
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/note_list_item_cbComplited"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:focusable="false"
+        android:layout_alignBottom="@+id/note_list_item_description"
+        android:minWidth="50dp"
+        android:nestedScrollingEnabled="false"
+        android:clickable="true"
+        android:enabled="true"
+        android:gravity="center_vertical"
+        android:layout_alignParentEnd="false"/>
+
+</RelativeLayout>
