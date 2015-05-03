@@ -13,7 +13,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Paint;
 import android.os.Bundle;
-
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -22,20 +22,30 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CursorAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 
 import static android.widget.AdapterView.AdapterContextMenuInfo;
 import static com.mikhalenko.memo.NotesDatabaseHelper.NoteCursor;
 
-public class HomeFragment extends ListFragment implements
-        LoaderManager.LoaderCallbacks<Cursor>, NotesList.INotesListener {
+public class HomeFragment extends ListFragment implements NotesList.INotesListener {
 
+    private static final int LOADER_NOTES = 0;
+    private static final int LOADER_CATEGORIES = 1;
     private OnFragmentInteractionListener mListener;
+    private NoteListLoaderCallbacks mNoteListLoaderCallbacks;
+    private Spinner mSpCategory;
+    private CategoriesListLoaderCallbacks mCategoriesListLoaderCallbacks;
+    private Prefs mPrefs;
 
 
     public static HomeFragment newInstance() {
@@ -55,10 +65,84 @@ public class HomeFragment extends ListFragment implements
     }
 
     @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_home_ex, container, false);
+
+        Button btnAddCategory = (Button) view.findViewById(R.id.btnAddCategory);
+        btnAddCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addNewCategory();
+            }
+        });
+
+        Button btnDelCategory = (Button) view.findViewById(R.id.btnDelCategory);
+        btnDelCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                delCurrentCategory();
+            }
+        });
+
+        mSpCategory = (Spinner) view.findViewById(R.id.spinner);
+
+        mSpCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mPrefs.setLastCategoryId(id);
+                if (getLoaderManager().getLoader(LOADER_NOTES) == null)
+                    getLoaderManager().initLoader(LOADER_NOTES, null, mNoteListLoaderCallbacks);
+                else
+                    getLoaderManager().restartLoader(LOADER_NOTES, null, mNoteListLoaderCallbacks);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        getLoaderManager().initLoader(LOADER_CATEGORIES, null, mCategoriesListLoaderCallbacks);
+
+        return view;
+    }
+
+    private void delCurrentCategory() {
+        NotesList.get(getActivity()).deleteCategory(mSpCategory.getSelectedItemId());
+        refreshCategories(); // TODO: rewrite with event for category
+    }
+
+    private void addNewCategory() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final EditText edt = new EditText(getActivity());
+
+        builder.setView(edt);
+        builder.setTitle(R.string.title_dialog_add_new_category);
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String name = edt.getText().toString();
+                if (!name.isEmpty()) {
+                    Category category = new Category(-1, name);
+                    NotesList.get(getActivity()).addOrUpdateCategory(category);
+                    refreshCategories();
+                }
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, null);
+        builder.show();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getLoaderManager().initLoader(0, null, this);
+        mPrefs = new Prefs(getActivity());
+
+        mNoteListLoaderCallbacks = new NoteListLoaderCallbacks();
+        mCategoriesListLoaderCallbacks = new CategoriesListLoaderCallbacks();
+
         setHasOptionsMenu(true);
         NotesList.get(getActivity()).registerListener(this);
     }
@@ -71,8 +155,12 @@ public class HomeFragment extends ListFragment implements
         super.onResume();
     }
 
+    private void refreshCategories() {
+        getLoaderManager().restartLoader(LOADER_CATEGORIES, null, mCategoriesListLoaderCallbacks);
+    }
+
     private void refreshList() {
-        getLoaderManager().restartLoader(0, null, this);
+        getLoaderManager().restartLoader(LOADER_NOTES, null, mNoteListLoaderCallbacks);
     }
 
     @Override
@@ -153,7 +241,6 @@ public class HomeFragment extends ListFragment implements
         }
 
         return super.onContextItemSelected(item);
-
     }
 
     private boolean actDelete(long noteId) {
@@ -173,28 +260,55 @@ public class HomeFragment extends ListFragment implements
         actEdit(-1);
     }
 
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new NoteListCursorLoader(getActivity());
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        NoteCursorAdapter adapter = new NoteCursorAdapter(getActivity(), (NoteCursor) data);
-        setListAdapter(adapter);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        setListAdapter(null);
-    }
-
     @Override
     public void onNotesListEvent(NotesList.ListenerEvents event) {
         refreshList();
     }
 
+    private class CategoriesListLoaderCallbacks implements LoaderManager.LoaderCallbacks<Cursor> {
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            return new CategoriesListCursorLoader(getActivity());
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+            SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(),
+                    android.R.layout.simple_spinner_item, // layout file
+                    cursor, // DB cursor
+                    new String[] {NotesDatabaseHelper.CATEGORY_NAME}, // data to bind to the UI
+                    new int[] {android.R.id.text1}, // views that'll represent the data from fromColumns
+                    0
+            );
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            mSpCategory.setAdapter(adapter);
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+            mSpCategory.setAdapter(null);
+        }
+    }
+
+    private class NoteListLoaderCallbacks implements LoaderManager.LoaderCallbacks<Cursor> {
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            return new NoteListCursorLoader(getActivity());
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            NoteCursorAdapter adapter = new NoteCursorAdapter(getActivity(), (NoteCursor) data);
+            setListAdapter(adapter);
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+            setListAdapter(null);
+        }
+
+
+    }
 
     private static class NoteCursorAdapter extends CursorAdapter {
 
@@ -210,7 +324,7 @@ public class HomeFragment extends ListFragment implements
             LayoutInflater inflater = LayoutInflater.from(context);
             View view = inflater.inflate(R.layout.list_item_note, null);
 
-            ViewHolder holder = new ViewHolder();
+            NoteViewHolder holder = new NoteViewHolder();
             holder.mTvTitle =  (TextView) view.findViewById(R.id.note_list_item_title);
             holder.mTvDesc = (TextView) view.findViewById(R.id.note_list_item_description);
             holder.mTvDate = (TextView) view.findViewById(R.id.note_list_item_date);
@@ -225,7 +339,7 @@ public class HomeFragment extends ListFragment implements
         public void bindView(View view, final Context context, Cursor cursor) {
             SingleNote note = mNoteCursor.getNote();
 
-            final ViewHolder holder = (ViewHolder) view.getTag();
+            final NoteViewHolder holder = (NoteViewHolder) view.getTag();
 
             holder.mCbComplited.setOnClickListener(new CompoundButton.OnClickListener() {
                 @Override
@@ -256,17 +370,19 @@ public class HomeFragment extends ListFragment implements
             holder.mTvDesc.setPaintFlags(flags);
 
         }
-    }
 
-    private static class ViewHolder {
-        public long mId;
-        public TextView mTvTitle;
-        public TextView mTvDesc;
-        public TextView mTvDate;
-        public CheckBox mCbComplited;
 
-        ViewHolder() {
-            mId = -1;
+        private static class NoteViewHolder {
+            public long mId;
+            public TextView mTvTitle;
+            public TextView mTvDesc;
+            public TextView mTvDate;
+            public CheckBox mCbComplited;
+
+            NoteViewHolder() {
+                mId = -1;
+            }
         }
+
     }
 }

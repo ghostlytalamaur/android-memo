@@ -1,5 +1,5 @@
 package com.mikhalenko.memo;
 
 public interface OnFragmentInteractionListener {
-    public void onFragmentInteraction(String s);
+    void onFragmentInteraction(String s);
 }

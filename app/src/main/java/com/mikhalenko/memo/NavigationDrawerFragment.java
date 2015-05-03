@@ -129,6 +129,7 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
 //                    The user manually opened the drawer; store this flag to prevent auto-showing
 //                    the navigation drawer automatically in the future.
                     mUserLearnedDrawer = true;
+                    // TODO: use Prefs
                     SharedPreferences sp = PreferenceManager
                             .getDefaultSharedPreferences(getActivity());
                     sp.edit().putBoolean(PREF_USER_LEARNED_DRAWER, true).apply();
@@ -259,7 +260,7 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
         return getActivity().getActionBar();
     }
 
-    public static interface NavigationDrawerCallbacks {
+    public interface NavigationDrawerCallbacks {
         void onNavigationDrawerItemSelected(int position);
     }
 }

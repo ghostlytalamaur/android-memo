@@ -12,8 +12,7 @@ public class NotesList {
     private ArrayList<INotesListener> mListeners;
 
     private NotesList(Context appContext) {
-        Context context = appContext;
-        mDbHelper = new NotesDatabaseHelper(context);
+        mDbHelper = new NotesDatabaseHelper(appContext);
     }
 
     public static NotesList get(Context appContext) {
@@ -23,29 +22,15 @@ public class NotesList {
     }
 
     public SingleNote getNote(long id) {
-        SingleNote note = null;
-        NoteCursor cursor = mDbHelper.queryNote(id);
-        cursor.moveToFirst();
-        if (!cursor.isAfterLast())
-            note = cursor.getNote();
-        cursor.close();
-        return note;
+        return mDbHelper.queryNote(id);
     }
 
     public boolean insertOrUpdate(SingleNote note) {
         if (note.isEmpty())
             return false;
-        boolean res;
-        if ((note.getId() == -1)) {
-            res = insertNote(note);
-            if (res)
-                notifyListeners(ListenerEvents.dataAdded);
-        }
-        else {
-            res = updateNote(note);
-            if (res)
-                notifyListeners(ListenerEvents.dataChanged);
-        }
+        boolean res = mDbHelper.insertOrUpdateNote(note);
+        if (res)
+            notifyListeners(ListenerEvents.dataChanged);
         return res;
 
     }
@@ -54,19 +39,20 @@ public class NotesList {
         return mDbHelper.queryNotes();
     }
 
-    private boolean insertNote(SingleNote newNote) {
-        long id = mDbHelper.insertNewNote(newNote);
-        newNote.setId(id);
-        boolean res = id != -1;
-        if (res)
-            notifyListeners(ListenerEvents.dataAdded);
-        return res;
+    public NoteCursor getNotesFromCategory(long categoryId) {
+        return mDbHelper.queryNotesFromCategory(categoryId);
     }
 
-    private boolean updateNote(SingleNote existingNote) {
-        boolean res = mDbHelper.updateExistingNote(existingNote);
-        notifyListeners(ListenerEvents.dataChanged);
-        return res;
+    public CategoryCursor getCategories() {
+        return  mDbHelper.queryCategories();
+    }
+
+    public boolean addOrUpdateCategory(Category category) {
+        return mDbHelper.insertOrUpdateCategory(category);
+    }
+
+    public boolean deleteCategory(long id) {
+        return mDbHelper.deleteCategory(id);
     }
 
     public boolean deleteNote(long id) {
@@ -101,12 +87,9 @@ public class NotesList {
 
     public boolean registerListener(INotesListener listener) {
         if (mListeners == null)
-            mListeners = new ArrayList<INotesListener>();
+            mListeners = new ArrayList<>();
         try {
-            if (listener != null)
-                return mListeners.add(listener);
-            else
-                return false;
+            return listener != null && mListeners.add(listener);
         }
         catch (ClassCastException e) {
             throw new ClassCastException(listener.toString()
@@ -115,8 +98,6 @@ public class NotesList {
     }
 
     public boolean unregisterListener(INotesListener listener) {
-        if (listener == null)
-            return false;
-        return mListeners.remove(listener);
+        return listener != null && mListeners.remove(listener);
     }
 }
