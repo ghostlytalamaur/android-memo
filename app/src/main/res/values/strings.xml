@@ -33,9 +33,11 @@
     <string name="alert_msg_delete_all">Delete all notes?</string>
 
     <string name="pref_autosave_not_empty_notes_key">auto_save_not_empy_notes</string>
+    <string name="pref_last_category_id_key">last_category_id</string>
     <string name="pref_autosave_not_empty_notes_title">Auto save</string>
     <string name="pref_autosave_not_empty_notes_summary">Auto save not empty notes</string>
 
     <string name="pref_header_global">Global</string>
     <string name="pref_header_global_summary">Global preferences</string>
+    <string name="title_dialog_add_new_category">Enter category name</string>
 </resources>

@@ -26,8 +26,8 @@ public class EditItemFragment extends Fragment {
     private static final String DIALOG_DATE = "date_dialog";
 
     private static final int REQUEST_DATE = 0;
-    private static final int LOADER_NOTE_LOAD = 0;
-    private static final int LOADER_NOTE_SAVE = 1;
+    private static final int LOADER_NOTE_LOAD = 10;
+    private static final int LOADER_NOTE_SAVE = 11;
     private SingleNote mNote;
     private EditText mEdtTitle;
     private EditText mEdtDesc;

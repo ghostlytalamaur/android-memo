@@ -7,16 +7,19 @@ import java.util.Date;
 public class SingleNote implements Serializable {
     private String mTitle;
     private String mDescription;
-    private long id;
+    private long mId;
     private long mDate;
     private boolean mIsCompleted;
     private String mSingleLineDescription;
     private String mSingleLineTitle;
 
+    private long mCategoryID;
+
     public static final String DATE_TIME_FORMAT = "HH:mm MM/dd/yyyy";
 
     SingleNote() {
-        id = -1;
+        mId = -1;
+        mCategoryID = 1; // Unknown category
         mIsCompleted = false;
         mDate = new Date().getTime();
     }
@@ -49,7 +52,7 @@ public class SingleNote implements Serializable {
     }
 
     public long getId() {
-        return id;
+        return mId;
     }
 
     public String getSingleLineDescription() {
@@ -61,7 +64,7 @@ public class SingleNote implements Serializable {
     }
 
     public void setId(long id) {
-        this.id = id;
+        this.mId = id;
     }
 
     public String getStringDate() {
@@ -78,5 +81,13 @@ public class SingleNote implements Serializable {
 
     public void setCompleted(boolean isCompleted) {
         mIsCompleted = isCompleted;
+    }
+
+    public long getCategoryID() {
+        return mCategoryID;
+    }
+
+    public void setCategoryID(long categoryID) {
+        mCategoryID = categoryID;
     }
 }
