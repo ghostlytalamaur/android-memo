@@ -60,7 +60,7 @@ public class SingleNote implements Serializable {
     }
 
     public String getSingleLineTitle() {
-        return mSingleLineTitle;
+        return String.valueOf(mCategoryID) + mSingleLineTitle;
     }
 
     public void setId(long id) {

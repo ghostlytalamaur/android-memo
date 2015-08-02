@@ -3,13 +3,14 @@ package com.mikhalenko.memo;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.LoaderManager;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.Loader;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 
 public class EditItemFragment extends Fragment {
     private static final String EXTRA_NOTE_ID = "com.mikhalenko.test.extra_note_id";
+    private static final String EXTRA_CATEGORY_ID = "com.mikhalenko.test.extra_category_id";
     private static final String SAVED_NOTE =  "com.mikhalenko.test.saved_note";
     private static final String DIALOG_DATE = "date_dialog";
 
@@ -39,11 +41,12 @@ public class EditItemFragment extends Fragment {
     public EditItemFragment() {
     }
 
-    public static EditItemFragment newInstance(long id) {
+    public static EditItemFragment newInstance(long id, long categoryId) {
         EditItemFragment f = new EditItemFragment();
 
         Bundle args = new Bundle();
         args.putLong(EXTRA_NOTE_ID, id);
+        args.putLong(EXTRA_CATEGORY_ID , categoryId);
         f.setArguments(args);
 
         return f;
@@ -66,8 +69,10 @@ public class EditItemFragment extends Fragment {
             args.putLong(EXTRA_NOTE_ID, noteId);
             LoaderManager lm = getLoaderManager();
             lm.initLoader(LOADER_NOTE_LOAD + (int) noteId, args, new NoteLoaderCallbacks());
-        } else if ((noteId == -1) && (savedInstanceState == null))
+        } else if ((noteId == -1) && (savedInstanceState == null)) {
             mNote = new SingleNote();
+            mNote.setCategoryID(getArguments().getLong(EXTRA_CATEGORY_ID, 1));
+        }
         else
             mNote = (SingleNote) savedInstanceState.getSerializable(SAVED_NOTE);
         setHasOptionsMenu(true);
@@ -88,7 +93,7 @@ public class EditItemFragment extends Fragment {
         mBtnDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fm = getActivity().getFragmentManager();
+                FragmentManager fm = getActivity().getSupportFragmentManager();
                 DatePickerFragment dlg = DatePickerFragment.newInstance(mNote.getDate());
                 dlg.setTargetFragment(EditItemFragment.this, REQUEST_DATE);
                 dlg.show(fm, DIALOG_DATE);
@@ -149,7 +154,7 @@ public class EditItemFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != Activity.RESULT_OK)
+        if (resultCode != AppCompatActivity.RESULT_OK)
             return;
         switch (requestCode) {
             case REQUEST_DATE:

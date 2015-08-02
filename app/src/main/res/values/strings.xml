@@ -6,6 +6,7 @@
 
     <string-array name="menu_titles">
         <item>Home</item>
+        <item>Categories</item>
         <item>Settings</item>
         <item>About</item>
     </string-array>
@@ -40,4 +41,8 @@
     <string name="pref_header_global">Global</string>
     <string name="pref_header_global_summary">Global preferences</string>
     <string name="title_dialog_add_new_category">Enter category name</string>
+    <string name="title_category_manager">Categories manager</string>
+    <string name="action_add_category">Add new category</string>
+    <string name="action_delete_all_categories">Delete all</string>
+    <string name="alert_msg_delete_all_in_category">Category \'%1$s \' contains %2$d notes. Removing a category will delete all notes in it. Are you sure?</string>
 </resources>

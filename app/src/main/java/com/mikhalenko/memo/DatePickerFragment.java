@@ -1,13 +1,13 @@
 package com.mikhalenko.memo;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
@@ -37,30 +37,38 @@ public class DatePickerFragment extends DialogFragment {
         f.setArguments(args);
         return f;
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        long date = new GregorianCalendar(mYear, mMonth, mDay, mHour, mMin).getTimeInMillis();
+        outState.putLong(EXTRA_DATE, date);
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        mDate = getArguments().getLong(EXTRA_DATE);
-        if (mDate != 0L) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(mDate);
+        if (savedInstanceState != null)
+            mDate = savedInstanceState.getLong(EXTRA_DATE);
+        else
+            mDate = getArguments().getLong(EXTRA_DATE);
 
-            mYear = cal.get(Calendar.YEAR);
-            mMonth = cal.get(Calendar.MONTH);
-            mDay = cal.get(Calendar.DAY_OF_MONTH);
-            mHour = cal.get(Calendar.HOUR_OF_DAY);
-            mMin = cal.get(Calendar.MINUTE);
-        } else {
-            mYear = getArguments().getInt(EXTRA_YEAR);
-            mMonth = getArguments().getInt(EXTRA_MONTH);
-            mDay = getArguments().getInt(EXTRA_DAY);
-            mHour = getArguments().getInt(EXTRA_HOUR);
-            mMin = getArguments().getInt(EXTRA_MIN);
-        }
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(mDate);
+
+        mYear = cal.get(Calendar.YEAR);
+        mMonth = cal.get(Calendar.MONTH);
+        mDay = cal.get(Calendar.DAY_OF_MONTH);
+        mHour = cal.get(Calendar.HOUR_OF_DAY);
+        mMin = cal.get(Calendar.MINUTE);
 
         View v = getActivity().getLayoutInflater().inflate(R.layout.fragment_date_dialog, null);
 
         TimePicker timePicker = (TimePicker) v.findViewById(R.id.dialog_date_timePicker);
+
+        timePicker.setSaveFromParentEnabled(false);
+        timePicker.setSaveEnabled(true);
+
         timePicker.setIs24HourView(true);
         timePicker.setCurrentHour(mHour);
         timePicker.setCurrentMinute(mMin);
@@ -69,30 +77,25 @@ public class DatePickerFragment extends DialogFragment {
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
                 mHour = hourOfDay;
                 mMin = minute;
-                getArguments().putInt(EXTRA_HOUR, hourOfDay);
-                getArguments().putInt(EXTRA_MIN, minute);
             }
         });
 
         DatePicker datePicker = (DatePicker) v.findViewById(R.id.dialog_date_datePicker);
+        datePicker.setSaveFromParentEnabled(false);
+        datePicker.setSaveEnabled(true);
         datePicker.init(mYear, mMonth, mDay, new DatePicker.OnDateChangedListener() {
             @Override
             public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 mYear = year;
                 mMonth = monthOfYear;
                 mDay = dayOfMonth;
-                // update args to restore on rotation
-                getArguments().putInt(EXTRA_YEAR, mYear);
-                getArguments().putInt(EXTRA_MONTH, mMonth);
-                getArguments().putInt(EXTRA_DAY, mDay);
             }
         });
 
         DialogInterface.OnClickListener onOkClickListener = new DialogInterface.OnClickListener() {
-
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                sendResult(Activity.RESULT_OK);
+                sendResult(AppCompatActivity.RESULT_OK);
             }
         };
 

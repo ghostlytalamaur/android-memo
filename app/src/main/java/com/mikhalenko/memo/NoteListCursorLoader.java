@@ -7,15 +7,16 @@ import android.database.Cursor;
 public class NoteListCursorLoader extends SQLiteCursorLoader {
 
 
-    private Prefs mPrefs;
+    private long mCategoryID;
 
-    public NoteListCursorLoader(Context context) {
+    public NoteListCursorLoader(Context context, long aCategoryID) {
         super(context);
-        mPrefs = new Prefs(getContext());
+        mCategoryID = aCategoryID;
     }
 
     @Override
     protected Cursor loadCursor() {
-        return NotesList.get(getContext()).getNotesFromCategory(mPrefs.getLastCategoryId());
+        return NotesList.get(getContext()).getNotesFromCategory(mCategoryID);
+//        return NotesList.get(getContext()).getNotes();
     }
 }

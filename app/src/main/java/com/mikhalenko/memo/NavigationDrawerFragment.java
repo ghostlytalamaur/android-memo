@@ -1,16 +1,17 @@
 package com.mikhalenko.memo;
 
-import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -73,7 +74,7 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
         });
 
         String[] menuTitles = getResources().getStringArray(R.array.menu_titles);
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(
+        mDrawerListView.setAdapter(new ArrayAdapter<>(
                 getActivity().getBaseContext(),
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
@@ -154,7 +155,7 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
         });
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-        getActivity().getFragmentManager().addOnBackStackChangedListener(this);
+        getActivity().getSupportFragmentManager().addOnBackStackChangedListener(this);
         selectItem(mCurrentSelectedPosition);
         onBackStackChanged();
     }
@@ -230,7 +231,7 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
             mDrawerLayout.closeDrawer(mFragmentContainerView);
             return true;
         } else if (item.getItemId() == android.R.id.home
-                && getActivity().getFragmentManager().popBackStackImmediate()) {
+                && getActivity().getSupportFragmentManager().popBackStackImmediate()) {
             return true;
         } else {
             return super.onOptionsItemSelected(item);
@@ -252,12 +253,12 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
     public void onBackStackChanged() {
         hideIME();
         if (getActionBar() == null) return;
-        int backStackCount = getActivity().getFragmentManager().getBackStackEntryCount();
+        int backStackCount = getActivity().getSupportFragmentManager().getBackStackEntryCount();
         mDrawerToggle.setDrawerIndicatorEnabled(backStackCount == 0);
     }
 
     private ActionBar getActionBar() {
-        return getActivity().getActionBar();
+        return ((AppCompatActivity) getActivity()).getSupportActionBar();
     }
 
     public interface NavigationDrawerCallbacks {

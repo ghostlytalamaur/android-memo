@@ -30,6 +30,12 @@ public class NotesDatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+        db.execSQL("PRAGMA foreign_keys=ON;");
+    }
+
+    @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("PRAGMA foreign_keys=ON;");
 
@@ -52,7 +58,7 @@ public class NotesDatabaseHelper extends SQLiteOpenHelper {
                 + NOTE_CATEGORY + " INTEGER NOT NULL, "
                 + "FOREIGN KEY(" + NOTE_CATEGORY + ") REFERENCES " +
                         CATEGORY_TABLE + " (" + CATEGORY_ID + ")"
-                + ");";
+                + " ON DELETE CASCADE ON UPDATE CASCADE);";
         db.execSQL(createNoteTable);
     }
 
@@ -74,6 +80,7 @@ public class NotesDatabaseHelper extends SQLiteOpenHelper {
         else
             id = getWritableDatabase().update(NOTES_TABLE, cv, NOTE_ID + "=?",
                     new String[] { id + "" });
+        note.setId(id);
         return id >= 0;
     }
 
@@ -121,6 +128,7 @@ public class NotesDatabaseHelper extends SQLiteOpenHelper {
         NoteCursor c = new NoteCursor(wrapped);
         c.moveToFirst();
         SingleNote note = c.getNote();
+
         c.close();
         return note;
     }
@@ -130,10 +138,7 @@ public class NotesDatabaseHelper extends SQLiteOpenHelper {
                 null,
                 CATEGORY_ID + " = ?",
                 new String[]{String.valueOf(id)},
-                null,
-                null,
-                null,
-                "1");
+                null, null, null, "1");
         CategoryCursor c = new CategoryCursor(wrapped);
         c.moveToFirst();
         Category category = c.getCategory();
@@ -149,7 +154,10 @@ public class NotesDatabaseHelper extends SQLiteOpenHelper {
 
     public NoteCursor queryNotesFromCategory(long categoryId) {
         Cursor cursor = getReadableDatabase().query(NOTES_TABLE,
-                null, CATEGORY_ID + " = ?", new String[] {String.valueOf(categoryId)}, null, null, NOTE_ID + " asc");
+                null,
+                NOTE_CATEGORY +" = ?",
+                new String[]{String.valueOf(categoryId)},
+                null, null, NOTE_ID + " asc");
         return new NoteCursor(cursor);
     }
 
@@ -159,7 +167,24 @@ public class NotesDatabaseHelper extends SQLiteOpenHelper {
         return new CategoryCursor(cursor);
     }
 
-    public static class CategoryCursor extends  CursorWrapper {
+    public Category queryCategoryByPos(int pos) {
+        if (pos < 0)
+            return null;
+        CategoryCursor cursor = queryCategories();
+        if (pos >= cursor.getCount())
+            return null;
+        cursor.moveToPosition(pos);
+        Category category = cursor.getCategory();
+        cursor.close();
+        return category;
+    }
+
+    public int deleteAllFromCategory(long categoryId) {
+        SQLiteDatabase db = getWritableDatabase();
+        return db.delete(NOTES_TABLE, NOTE_CATEGORY + " = ?", new String[] {String.valueOf(categoryId)});
+    }
+
+    public static class CategoryCursor extends CursorWrapper {
 
         public CategoryCursor(Cursor cursor) {
             super(cursor);

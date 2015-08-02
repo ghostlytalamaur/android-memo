@@ -1,8 +1,8 @@
 package com.mikhalenko.memo;
 
-import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v4.content.AsyncTaskLoader;
 
 
 public abstract class SQLiteCursorLoader extends AsyncTaskLoader<Cursor> {
