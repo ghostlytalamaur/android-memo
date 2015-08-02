@@ -1,17 +1,17 @@
 package com.mikhalenko.memo;
 
-import android.app.ActionBar;
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class MainActivity extends Activity
+public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
         OnFragmentInteractionListener {
 
@@ -24,8 +24,8 @@ public class MainActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mTitle = getTitle();
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getFragmentManager().findFragmentById(R.id.navigation_drawer);
+        mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager().
+                findFragmentById(R.id.navigation_drawer);
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -36,18 +36,22 @@ public class MainActivity extends Activity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-        Fragment curFragment;
+        Fragment curFragment = null;
         switch (position) {
             case 0: {
                 // home
-                curFragment = HomeFragment.newInstance();
+                curFragment = new SlidingTabsHomeFragment();
                 break;
             }
             case 1: {
-                curFragment = new SettingsFragment();
+                curFragment = CatManFragment.newInstance();
                 break;
             }
             case 2: {
+//                curFragment = new SettingsFragment();
+                break;
+            }
+            case 3: {
                 curFragment = AboutFragment.newInstance();
                 break;
             }
@@ -59,7 +63,7 @@ public class MainActivity extends Activity
         if (curFragment == null)
             return;
 
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         int backStackCount = fragmentManager.getBackStackEntryCount();
         if (backStackCount > 0) {
@@ -78,7 +82,7 @@ public class MainActivity extends Activity
     }
 
     public void restoreActionBar() {
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         if (actionBar == null) return;
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayUseLogoEnabled(true);
@@ -108,7 +112,7 @@ public class MainActivity extends Activity
         return super.onOptionsItemSelected(item);
     }
 
-    //TODO: implement onFragmentInteraction. See HomeFragment.java
+    //TODO: implement onFragmentInteraction. See CatManFragment.java
     public void onFragmentInteraction(String s){
         mTitle = s;
         restoreActionBar();

@@ -1,16 +1,17 @@
 package com.mikhalenko.memo;
 
 import android.content.Context;
+import android.support.v4.app.ActivityCompat;
+
 import java.util.ArrayList;
+import java.util.Observable;
 
 import static com.mikhalenko.memo.NotesDatabaseHelper.*;
 
 
-public class NotesList {
+public class NotesList extends Observable {
     private static NotesList sNotesList;
     private final NotesDatabaseHelper mDbHelper;
-    private ArrayList<INotesListener> mListeners;
-
     private NotesList(Context appContext) {
         mDbHelper = new NotesDatabaseHelper(appContext);
     }
@@ -29,8 +30,7 @@ public class NotesList {
         if (note.isEmpty())
             return false;
         boolean res = mDbHelper.insertOrUpdateNote(note);
-        if (res)
-            notifyListeners(ListenerEvents.dataChanged);
+        notifyListeners();
         return res;
 
     }
@@ -48,56 +48,59 @@ public class NotesList {
     }
 
     public boolean addOrUpdateCategory(Category category) {
-        return mDbHelper.insertOrUpdateCategory(category);
+        boolean res = mDbHelper.insertOrUpdateCategory(category);
+        if (res)
+            notifyListeners();
+        return res;
+    }
+
+    public Category getCategory(long id) {
+        return mDbHelper.queryCategory(id);
+    }
+
+    public Category getCategoryByPos(int pos) {
+        return mDbHelper.queryCategoryByPos(pos);
+    }
+
+    public int getNotesInCategory(long categoryID) {
+        NoteCursor c = getNotesFromCategory(categoryID);
+        int res = c.getCount();
+        c.close();
+        return res;
     }
 
     public boolean deleteCategory(long id) {
-        return mDbHelper.deleteCategory(id);
+        boolean res = mDbHelper.deleteCategory(id);
+        if (res)
+            notifyListeners();
+        return res;
     }
 
     public boolean deleteNote(long id) {
         boolean res = mDbHelper.deleteNote(id);
-        notifyListeners(ListenerEvents.dataDeleted);
+        notifyListeners();
         return res;
     }
 
     public void deleteAll() {
         mDbHelper.deleteAll();
-        notifyListeners(ListenerEvents.dataDeleted);
+        notifyListeners();
     }
 
-
-    private void notifyListeners(ListenerEvents event) {
-        // TODO: make copy of mListeners before iterating
-        for (INotesListener l : mListeners) {
-            if (l != null)
-                l.onNotesListEvent(event);
-        }
+    private void notifyListeners() {
+        setChanged();
+        notifyObservers();
     }
 
-    public enum ListenerEvents {
-        dataChanged,
-        dataAdded,
-        dataDeleted
+    public void deleteAllFromCategory(long categoryId) {
+        mDbHelper.deleteAllFromCategory(categoryId);
+        notifyListeners();
     }
 
-    public interface INotesListener {
-        void onNotesListEvent(ListenerEvents event);
-    }
-
-    public boolean registerListener(INotesListener listener) {
-        if (mListeners == null)
-            mListeners = new ArrayList<>();
-        try {
-            return listener != null && mListeners.add(listener);
-        }
-        catch (ClassCastException e) {
-            throw new ClassCastException(listener.toString()
-                + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    public boolean unregisterListener(INotesListener listener) {
-        return listener != null && mListeners.remove(listener);
+    public int getCategoriesCount() {
+        CategoryCursor cursor = getCategories();
+        int count = cursor.getCount();
+        cursor.close();
+        return count;
     }
 }
