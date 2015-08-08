@@ -2,12 +2,12 @@ package com.mikhalenko.memo;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.ContextMenu;
@@ -93,6 +93,13 @@ public class SlidingTabsHomeFragment extends Fragment {
     }
 
     @Override
+    public void onPause() {
+        Prefs prefs = new Prefs(getActivity());
+        prefs.setLastCategoryIndex(mViewPager.getCurrentItem());
+        super.onPause();
+    }
+
+    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
         mViewPager.setAdapter(new CategoryPageAdapter());
@@ -101,6 +108,17 @@ public class SlidingTabsHomeFragment extends Fragment {
         mSlidingTabLayout.setViewPager(mViewPager);
         if (savedInstanceState != null)
             mViewPager.setCurrentItem(savedInstanceState.getInt(cstStateCurIndex, 0));
+        else {
+            Prefs prefs = new Prefs(getActivity());
+            if (prefs.isNeedSaveLastCategory())
+                mViewPager.setCurrentItem(prefs.getLastCategoryIndex());
+        }
+    }
+
+    private long getNoteID(int position) {
+        Category category = NotesList.get(getActivity()).getCategoriesList().
+                get(mViewPager.getCurrentItem());
+        return category.getNotes().get(position).getID();
     }
 
     @Override
@@ -108,10 +126,7 @@ public class SlidingTabsHomeFragment extends Fragment {
         AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()) {
             case R.id.menu_delete: {
-                Category category = NotesList.get(getActivity()).getCategoriesList().
-                        get(mViewPager.getCurrentItem());
-                long id = category.getNotes().get(menuInfo.position).getID();
-                return actDelete(id);
+                return actDelete(getNoteID(menuInfo.position));
             }
         }
 
@@ -194,7 +209,7 @@ public class SlidingTabsHomeFragment extends Fragment {
             view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    actEdit(id);
+                    actEdit(getNoteID(position));
                 }
             });
 

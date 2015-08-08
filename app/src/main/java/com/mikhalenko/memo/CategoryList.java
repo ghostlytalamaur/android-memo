@@ -22,4 +22,5 @@ public class CategoryList extends ArrayList<Category> {
                 it.remove();
         }
     }
+
 }

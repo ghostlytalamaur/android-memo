@@ -6,4 +6,24 @@
         android:summary="@string/pref_autosave_not_empty_notes_summary"
         android:defaultValue="true">
     </CheckBoxPreference>
+    <ListPreference
+        android:key="@string/pref_sorttype_key"
+        android:title="@string/pref_sorttype_title"
+        android:summary="@string/pref_sorttype_summary"
+        android:entries="@array/sort_type_entries"
+        android:entryValues="@array/sort_type_entries_values"
+        android:defaultValue="0">
+    </ListPreference>
+    <CheckBoxPreference
+        android:key="@string/pref_complited_at_the_end_key"
+        android:title="@string/pref_complited_at_the_end_title"
+        android:summary="@string/pref_complited_at_the_end_summary"
+        android:defaultValue="true">
+    </CheckBoxPreference>
+    <CheckBoxPreference
+        android:key="@string/pref_save_last_category_key"
+        android:title="@string/pref_save_last_category_title"
+        android:summary="@string/pref_save_last_category_summary"
+        android:defaultValue="true">
+    </CheckBoxPreference>
 </PreferenceScreen>

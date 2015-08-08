@@ -1,12 +1,12 @@
 package com.mikhalenko.memo;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -155,14 +155,14 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
         });
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-        getActivity().getSupportFragmentManager().addOnBackStackChangedListener(this);
+        getActivity().getFragmentManager().addOnBackStackChangedListener(this);
         selectItem(mCurrentSelectedPosition);
         onBackStackChanged();
     }
 
     private void hideIME() {
         InputMethodManager inputMethodManager = (InputMethodManager) getActivity().
-                getSystemService(Activity.INPUT_METHOD_SERVICE);
+                getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE);
         if (getActivity().getCurrentFocus() != null)
             inputMethodManager.hideSoftInputFromWindow(
                     getActivity().getCurrentFocus().getWindowToken(), 0);
@@ -231,7 +231,7 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
             mDrawerLayout.closeDrawer(mFragmentContainerView);
             return true;
         } else if (item.getItemId() == android.R.id.home
-                && getActivity().getSupportFragmentManager().popBackStackImmediate()) {
+                && getActivity().getFragmentManager().popBackStackImmediate()) {
             return true;
         } else {
             return super.onOptionsItemSelected(item);
@@ -253,7 +253,7 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
     public void onBackStackChanged() {
         hideIME();
         if (getActionBar() == null) return;
-        int backStackCount = getActivity().getSupportFragmentManager().getBackStackEntryCount();
+        int backStackCount = getActivity().getFragmentManager().getBackStackEntryCount();
         mDrawerToggle.setDrawerIndicatorEnabled(backStackCount == 0);
     }
 

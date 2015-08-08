@@ -16,12 +16,14 @@ public class NotesList extends Observable {
     private static NotesList sNotesList;
     private final NotesDatabaseHelper mDbHelper;
     private HandlerExtension mHandler;
+    private Prefs mPrefs;
 
     private CategoryList mCategories;
     private NotesList(Context appContext) {
         mDbHelper = new NotesDatabaseHelper(appContext);
         mCategories = new CategoryList();
         mHandler = new HandlerExtension(this);
+        mPrefs = new Prefs(appContext);
         initList();
     }
 
@@ -69,6 +71,7 @@ public class NotesList extends Observable {
                 validIDs.add(note.getID());
             } while (noteCursor.moveToNext());
             wCategory.getNotes().deleteNotValid(validIDs);
+            wCategory.getNotes().sortList(mPrefs.getSortType(), mPrefs.isComplitedAtTheEnd());
             noteCursor.close();
         } while (categoryCursor.moveToNext());
         mCategories.deleteNotValid(validCategories);

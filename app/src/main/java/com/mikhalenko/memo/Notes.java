@@ -16,24 +16,40 @@ public class Notes extends ArrayList<SingleNote> {
                 get(I).setUserSortIndex(I);
     }
 
-    public void sortByID() {
+    private void sortByID(final boolean aComplitedAtEnd) {
         Collections.sort(this, new Comparator<SingleNote>() {
             @Override
             public int compare(SingleNote lhs, SingleNote rhs) {
-                return (int) (lhs.getID() - rhs.getID());
+                int res = Boolean.compare(lhs.isCompleted(), rhs.isCompleted());
+                if (res == 0)
+                    res = Long.compare(rhs.getID(), lhs.getID());
+                return res;
             }
         });
         updateSortIndex(SortIndexType.sitAuto);
     }
 
-    public  void sortByDate() {
+    private void sortByDate(boolean aComplitedAtEnd) {
         Collections.sort(this, new Comparator<SingleNote>() {
             @Override
             public int compare(SingleNote lhs, SingleNote rhs) {
-                return (int) (lhs.getDate() - rhs.getDate());
+                int res = Boolean.compare(lhs.isCompleted(), rhs.isCompleted());
+                if (res == 0)
+                    res = Long.compare(lhs.getDate(), rhs.getDate());
+                return res;
             }
         });
         updateSortIndex(SortIndexType.sitAuto);
+    }
+
+    public void sortList(SortType aType, boolean aComplitedAtEnd) {
+        switch (aType) {
+            case ID:
+                sortByID(aComplitedAtEnd);
+                break;
+            case DATE:
+                sortByDate(aComplitedAtEnd);
+        }
     }
 
     public SingleNote getByID(long aID) {

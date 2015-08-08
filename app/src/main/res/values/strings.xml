@@ -45,4 +45,14 @@
     <string name="action_add_category">Add new category</string>
     <string name="action_delete_all_categories">Delete all</string>
     <string name="alert_msg_delete_all_in_category">Category \'%1$s \' contains %2$d notes. Removing a category will delete all notes in it. Are you sure?</string>
+    <string name="pref_sorttype_key">sort_type</string>
+    <string name="pref_sorttype_title">Sorting</string>
+    <string name="pref_sorttype_summary">Default sorting type in notes list</string>
+    <string name="pref_complited_at_the_end_key">complited_at_the_end</string>
+    <string name="pref_complited_at_the_end_title">Complited at the end</string>
+    <string name="pref_complited_at_the_end_summary">Show complited notes at the end of list</string>
+    <string name="pref_sorttype_defvalue">date</string>
+    <string name="pref_save_last_category_key">save_last_category</string>
+    <string name="pref_save_last_category_title">Save last category</string>
+    <string name="pref_save_last_category_summary">Restore last accessed category on startup</string>
 </resources>

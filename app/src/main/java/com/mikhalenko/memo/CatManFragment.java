@@ -2,15 +2,15 @@ package com.mikhalenko.memo;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ListFragment;
+import android.app.LoaderManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ListFragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -131,7 +131,7 @@ public class CatManFragment extends ListFragment implements Observer {
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean actDeleteAll() {
+//    private boolean actDeleteAll() {
 /*
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(R.string.alert_msg_delete_all);
@@ -145,8 +145,8 @@ public class CatManFragment extends ListFragment implements Observer {
         builder.create().show();
         return true;
 */
-        return false;
-    }
+//        return false;
+//    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -263,7 +263,7 @@ public class CatManFragment extends ListFragment implements Observer {
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(context);
-            View view = inflater.inflate(R.layout.list_item_catman, null);
+            View view = inflater.inflate(R.layout.list_item_catman, parent, false);
 
             CategoryViewHolder holder = new CategoryViewHolder();
             holder.mTvTitle =  (TextView) view.findViewById(R.id.catman_list_title);
