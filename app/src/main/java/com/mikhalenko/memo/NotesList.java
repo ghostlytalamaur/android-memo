@@ -1,10 +1,13 @@
 package com.mikhalenko.memo;
 
 import android.content.Context;
-import android.support.v4.app.ActivityCompat;
+import android.os.Handler;
+import android.os.Message;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Observable;
+import java.util.Vector;
 
 import static com.mikhalenko.memo.NotesDatabaseHelper.*;
 
@@ -12,8 +15,14 @@ import static com.mikhalenko.memo.NotesDatabaseHelper.*;
 public class NotesList extends Observable {
     private static NotesList sNotesList;
     private final NotesDatabaseHelper mDbHelper;
+    private HandlerExtension mHandler;
+
+    private CategoryList mCategories;
     private NotesList(Context appContext) {
         mDbHelper = new NotesDatabaseHelper(appContext);
+        mCategories = new CategoryList();
+        mHandler = new HandlerExtension(this);
+        initList();
     }
 
     public static NotesList get(Context appContext) {
@@ -22,6 +31,53 @@ public class NotesList extends Observable {
         return sNotesList;
     }
 
+    private void initList() {
+        CategoryCursor categoryCursor = mDbHelper.queryCategories();
+        if (categoryCursor.isBeforeFirst() && categoryCursor.isAfterLast())
+            return;
+//        mCategories.clear();
+        Vector<Long> validCategories = new Vector<>();
+        categoryCursor.moveToFirst();
+        do {
+            Category NewCategory = categoryCursor.getCategory();
+            validCategories.add(NewCategory.getID());
+
+            Category wCategory = mCategories.getByID(NewCategory.getID());
+            if (wCategory == null) {
+                mCategories.add(NewCategory);
+                wCategory = NewCategory;
+            }
+            else
+                wCategory.copyFrom(NewCategory);
+
+            NoteCursor noteCursor = mDbHelper.queryNotesFromCategory(wCategory.getID());
+            if (noteCursor.isBeforeFirst() && noteCursor.isAfterLast()) {
+                wCategory.getNotes().clear();
+                continue;
+            }
+
+            Vector<Long> validIDs = new Vector<>();
+            noteCursor.moveToFirst();
+            do {
+                SingleNote note = noteCursor.getNote();
+
+                SingleNote wNote = wCategory.getNotes().getByID(note.getID());
+                if (wNote == null)
+                    wCategory.getNotes().add(note);
+                else
+                    wNote.copyFrom(note);
+                validIDs.add(note.getID());
+            } while (noteCursor.moveToNext());
+            wCategory.getNotes().deleteNotValid(validIDs);
+            noteCursor.close();
+        } while (categoryCursor.moveToNext());
+        mCategories.deleteNotValid(validCategories);
+        categoryCursor.close();
+    }
+
+    public ArrayList<Category> getCategoriesList() {
+        return mCategories;
+    }
     public SingleNote getNote(long id) {
         return mDbHelper.queryNote(id);
     }
@@ -30,7 +86,7 @@ public class NotesList extends Observable {
         if (note.isEmpty())
             return false;
         boolean res = mDbHelper.insertOrUpdateNote(note);
-        notifyListeners();
+        notifyUIListeners();
         return res;
 
     }
@@ -50,7 +106,7 @@ public class NotesList extends Observable {
     public boolean addOrUpdateCategory(Category category) {
         boolean res = mDbHelper.insertOrUpdateCategory(category);
         if (res)
-            notifyListeners();
+            notifyUIListeners();
         return res;
     }
 
@@ -72,29 +128,30 @@ public class NotesList extends Observable {
     public boolean deleteCategory(long id) {
         boolean res = mDbHelper.deleteCategory(id);
         if (res)
-            notifyListeners();
+            notifyUIListeners();
         return res;
     }
 
     public boolean deleteNote(long id) {
         boolean res = mDbHelper.deleteNote(id);
-        notifyListeners();
+        notifyUIListeners();
         return res;
     }
 
     public void deleteAll() {
         mDbHelper.deleteAll();
-        notifyListeners();
+        notifyUIListeners();
     }
 
-    private void notifyListeners() {
+    private void notifyUIListeners() {
+        initList();
         setChanged();
-        notifyObservers();
+        mHandler.sendMessage(new Message());
     }
 
     public void deleteAllFromCategory(long categoryId) {
         mDbHelper.deleteAllFromCategory(categoryId);
-        notifyListeners();
+        notifyUIListeners();
     }
 
     public int getCategoriesCount() {
@@ -102,5 +159,18 @@ public class NotesList extends Observable {
         int count = cursor.getCount();
         cursor.close();
         return count;
+    }
+
+    private class HandlerExtension extends Handler {
+        private final WeakReference<NotesList> mNotesList;
+
+        HandlerExtension(NotesList list) {
+            mNotesList = new WeakReference<>(list);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            mNotesList.get().notifyObservers();
+        }
     }
 }

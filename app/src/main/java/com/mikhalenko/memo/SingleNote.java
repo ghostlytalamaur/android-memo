@@ -10,8 +10,26 @@ public class SingleNote implements Serializable {
     private long mId;
     private long mDate;
     private boolean mIsCompleted;
-    private String mSingleLineDescription;
-    private String mSingleLineTitle;
+
+    private int mUserSortIndex;
+    private int mAutoSortIndex;
+
+    public int getAutoSortIndex() {
+        return mAutoSortIndex;
+    }
+
+    public void setAutoSortIndex(int mAutoSortIndex) {
+        this.mAutoSortIndex = mAutoSortIndex;
+    }
+
+    public int getUserSortIndex() {
+
+        return mUserSortIndex;
+    }
+
+    public void setUserSortIndex(int mUserSortIndex) {
+        this.mUserSortIndex = mUserSortIndex;
+    }
 
     private long mCategoryID;
 
@@ -29,7 +47,6 @@ public class SingleNote implements Serializable {
     }
 
     public void setTitle(String title) {
-        mSingleLineTitle = title.replaceAll("\n", " ");
         mTitle = title;
     }
 
@@ -38,7 +55,6 @@ public class SingleNote implements Serializable {
     }
 
     public void setDescription(String description) {
-        mSingleLineDescription = description.replaceAll("\n", " ");
         mDescription = description;
     }
 
@@ -51,16 +67,16 @@ public class SingleNote implements Serializable {
             mDate = date;
     }
 
-    public long getId() {
+    public long getID() {
         return mId;
     }
 
     public String getSingleLineDescription() {
-        return mSingleLineDescription;
+        return mDescription.replaceAll("\n", " ");
     }
 
     public String getSingleLineTitle() {
-        return String.valueOf(mCategoryID) + mSingleLineTitle;
+        return mTitle.replaceAll("\n", " ");
     }
 
     public void setId(long id) {
@@ -89,5 +105,16 @@ public class SingleNote implements Serializable {
 
     public void setCategoryID(long categoryID) {
         mCategoryID = categoryID;
+    }
+
+    public void copyFrom(SingleNote aNote) {
+        if (aNote == null)
+            return;;
+        mIsCompleted = aNote.isCompleted();
+        mTitle = aNote.getTitle();
+        mDate = aNote.getDate();
+        mDescription = aNote.getDescription();
+        mAutoSortIndex = aNote.getAutoSortIndex();
+        mUserSortIndex = aNote.getUserSortIndex();
     }
 }

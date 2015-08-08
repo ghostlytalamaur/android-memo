@@ -48,8 +48,9 @@ public class MainActivity extends AppCompatActivity
                 break;
             }
             case 2: {
-//                curFragment = new SettingsFragment();
-                break;
+//                curFragment = new PrefsFragment();
+//                break;
+//                PrefsFragment fragment = new PrefsFragment();
             }
             case 3: {
                 curFragment = AboutFragment.newInstance();

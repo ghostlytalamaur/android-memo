@@ -3,14 +3,11 @@ package com.mikhalenko.memo;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.ContextMenu;
@@ -110,8 +107,12 @@ public class SlidingTabsHomeFragment extends Fragment {
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()) {
-            case R.id.menu_delete:
-                return actDelete(menuInfo.id);
+            case R.id.menu_delete: {
+                Category category = NotesList.get(getActivity()).getCategoriesList().
+                        get(mViewPager.getCurrentItem());
+                long id = category.getNotes().get(menuInfo.position).getID();
+                return actDelete(id);
+            }
         }
 
         return super.onContextItemSelected(item);
@@ -136,7 +137,7 @@ public class SlidingTabsHomeFragment extends Fragment {
         builder.setPositiveButton(R.string.alert_btn_delete, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                NotesList.get(getActivity()).deleteAllFromCategory(category.getId());
+                NotesList.get(getActivity()).deleteAllFromCategory(category.getID());
             }
         });
         builder.setNegativeButton(android.R.string.cancel, null);
@@ -149,7 +150,7 @@ public class SlidingTabsHomeFragment extends Fragment {
         FragmentManager manager = getFragmentManager();
 
         Category category = NotesList.get(getActivity()).getCategoryByPos(mViewPager.getCurrentItem());
-        Fragment fragment = EditItemFragment.newInstance(id, category.getId());
+        Fragment fragment = EditItemFragment.newInstance(id, category.getID());
 
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.addToBackStack(null);
@@ -165,10 +166,7 @@ public class SlidingTabsHomeFragment extends Fragment {
 
         @Override
         public int getCount() {
-            NotesDatabaseHelper.CategoryCursor c = NotesList.get(getActivity()).getCategories();
-            int count = c.getCount();
-            c.close();
-            return count;
+            return NotesList.get(getActivity()).getCategoriesList().size();
         }
 
         @Override
@@ -178,7 +176,8 @@ public class SlidingTabsHomeFragment extends Fragment {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            Category category = NotesList.get(getActivity()).getCategoryByPos(position);
+//            Category category = NotesList.get(getActivity()).getCategoryByPos(position);
+            Category category = NotesList.get(getActivity()).getCategoriesList().get(position);
             if (category != null)
                 return category.getName();
             else
@@ -187,7 +186,9 @@ public class SlidingTabsHomeFragment extends Fragment {
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-            NotesListView view = new NotesListView(getActivity(), position, getLoaderManager());
+//            NotesListView view = new NotesListView(getActivity(), position, getLoaderManager());
+            Category category = NotesList.get(getActivity()).getCategoriesList().get(position);
+            NotesListView view = new NotesListView(getActivity(), category);
 
             NotesList.get(getActivity()).addObserver(view);
             view.setOnItemClickListener(new AdapterView.OnItemClickListener() {

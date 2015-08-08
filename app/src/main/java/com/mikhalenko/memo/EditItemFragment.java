@@ -143,7 +143,7 @@ public class EditItemFragment extends Fragment {
         }
         if (mListener != null) {
             String title;
-            if ((mNote == null) || (mNote.getId() == -1))
+            if ((mNote == null) || (mNote.getID() == -1))
                 title = getResources().getString(R.string.title_note_new);
             else
                 title = getResources().getString(R.string.title_note_edit);
@@ -180,7 +180,7 @@ public class EditItemFragment extends Fragment {
     private void enableMenuItems() {
         if (mMenu != null) {
             MenuItem item = mMenu.findItem(R.id.action_delete);
-            if (item != null) item.setVisible((mNote != null) && (mNote.getId() != -1));
+            if (item != null) item.setVisible((mNote != null) && (mNote.getID() != -1));
         }
     }
 
@@ -204,7 +204,7 @@ public class EditItemFragment extends Fragment {
         builder.setPositiveButton(R.string.alert_btn_delete, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (NotesList.get(getActivity()).deleteNote(mNote.getId()))
+                if (NotesList.get(getActivity()).deleteNote(mNote.getID()))
                     getFragmentManager().popBackStackImmediate();
             }
         });

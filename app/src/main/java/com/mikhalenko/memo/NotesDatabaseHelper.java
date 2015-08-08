@@ -74,7 +74,7 @@ public class NotesDatabaseHelper extends SQLiteOpenHelper {
         cv.put(NOTE_STATUS, note.isCompleted());
         cv.put(NOTE_CATEGORY, note.getCategoryID());
 
-        long id = note.getId();
+        long id = note.getID();
         if (queryNote(id) == null)
             id = getWritableDatabase().insert(NOTES_TABLE, null, cv);
         else
@@ -88,7 +88,7 @@ public class NotesDatabaseHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put(CATEGORY_NAME, category.getName());
 
-        long id = category.getId();
+        long id = category.getID();
 
         if (queryCategory(id) == null) {
             id = getWritableDatabase().insert(CATEGORY_TABLE, null, cv);
@@ -96,7 +96,7 @@ public class NotesDatabaseHelper extends SQLiteOpenHelper {
         }
         else
             id = getWritableDatabase().update(CATEGORY_TABLE, cv, CATEGORY_ID + "=?",
-                    new String[]{category.getId() + ""});
+                    new String[]{category.getID() + ""});
         return id >= 0;
     }
 

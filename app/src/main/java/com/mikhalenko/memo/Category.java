@@ -9,9 +9,16 @@ public class Category implements Serializable {
     private long mId;
     private String mName;
 
+    private Notes mNotes;
+
     public Category(long id, String name) {
         mId = id;
         mName = name;
+        mNotes = new Notes();
+    }
+
+    public void copyFrom(Category aCategory) {
+        mName = aCategory.getName();
     }
 
     public String getName() {
@@ -22,11 +29,15 @@ public class Category implements Serializable {
         mName = name;
     }
 
-    public long getId() {
+    public long getID() {
         return mId;
     }
 
     public void setId(long id) {
         mId = id;
+    }
+
+    public Notes getNotes() {
+        return mNotes;
     }
 }

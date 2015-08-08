@@ -282,10 +282,10 @@ public class CatManFragment extends ListFragment implements Observer {
             Category category = categoryCursor.getCategory();
 
             final CategoryViewHolder holder = (CategoryViewHolder) view.getTag();
-            holder.mId = category.getId();
+            holder.mId = category.getID();
             holder.mTvTitle.setText(category.getName());
             holder.mTvCount.setText(String.valueOf(
-                    NotesList.get(context).getNotesInCategory(category.getId()))
+                    NotesList.get(context).getNotesInCategory(category.getID()))
             );
         }
     }

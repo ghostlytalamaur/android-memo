@@ -1,38 +1,24 @@
 package com.mikhalenko.memo;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Paint;
-import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.CursorAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.Observable;
 import java.util.Observer;
 
-import static com.mikhalenko.memo.NotesDatabaseHelper.NoteCursor;
 
 public class NotesListView extends ListView implements Observer {
 
-    private static final int cstFirstLoaderNotesId = 1000;
-    private static final String cstArgsLoaderCatetoryId = "ArgsLoaderCatetoryId";
-
-    private LoaderManager mLoaderManager;
-    private long mCategoryID;
-    private NoteListLoaderCallbacks mNoteListLoaderCallbacks;
-//    private Handler mHandler;
 
     public NotesListView(Context context) {
         super(context);
@@ -46,42 +32,17 @@ public class NotesListView extends ListView implements Observer {
         super(context, attrs, defStyleAttr);
     }
 
-
-    public NotesListView(Context context, int pos, LoaderManager loaderManager) {
-        super(context);
-//        mHandler = new HandlerExtension(this);
-        assert (loaderManager != null);
-        mLoaderManager = loaderManager;
-        mNoteListLoaderCallbacks = new NoteListLoaderCallbacks();
-        loadNotes(pos);
-    }
-
-    private boolean loadNotes(int pos) {
-        Category category = NotesList.get(getContext()).getCategoryByPos(pos);
-        if (category != null)
-            return loadNotesById(category.getId());
-        return false;
+    public NotesListView(Context aContext, Category aCategory) {
+        super(aContext);
+        if (aCategory != null)
+            setAdapter(new NotesAdapter(getContext(), aCategory));
     }
 
     private void refreshList() {
         Log.d(Consts.LOGCAT_TAG, "In NotesListView.refreshList()");
-        Bundle args = new Bundle();
-        args.putLong(cstArgsLoaderCatetoryId, mCategoryID);
-        mLoaderManager.restartLoader(getNotesLoaderId(), args, mNoteListLoaderCallbacks);
-    }
-
-    private int getNotesLoaderId() {
-        return (int) (cstFirstLoaderNotesId + mCategoryID);
-    }
-
-    private boolean loadNotesById(long categoryID) {
-        mCategoryID = categoryID;
-
-        Bundle args = new Bundle();
-        args.putLong(cstArgsLoaderCatetoryId, mCategoryID);
-
-        mLoaderManager.initLoader(getNotesLoaderId(), args, mNoteListLoaderCallbacks);
-        return true;
+        if (getAdapter() == null)
+            return;
+        ((NotesAdapter) getAdapter()).notifyDataSetChanged();
     }
 
     @Override
@@ -89,19 +50,29 @@ public class NotesListView extends ListView implements Observer {
         refreshList();
     }
 
-    public class NoteCursorAdapter extends CursorAdapter {
+    public class NotesAdapter extends ArrayAdapter<SingleNote> {
+        private final Category mCategory;
 
-
-        public NoteCursorAdapter(Context context, NoteCursor cursor) {
-            super(context, cursor, 0);
+        public NotesAdapter(Context aContext, Category aCategory) {
+            super(aContext, 0, aCategory.getNotes());
+            mCategory = aCategory;
         }
 
         @Override
-        public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            LayoutInflater inflater = LayoutInflater.from(context);
-            View view = inflater.inflate(R.layout.list_item_note, null);
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (mCategory == null)
+                return null;
 
-            NoteViewHolder holder = new NoteViewHolder();
+            View view;
+            if (convertView == null) {
+                LayoutInflater inflater = LayoutInflater.from(getContext());
+                view = inflater.inflate(R.layout.list_item_note, parent, false);
+            }
+            else
+                view = convertView;
+
+            final NoteViewHolder holder = new NoteViewHolder();
+
             holder.mTvTitle =  (TextView) view.findViewById(R.id.note_list_item_title);
             holder.mTvDesc = (TextView) view.findViewById(R.id.note_list_item_description);
             holder.mTvDate = (TextView) view.findViewById(R.id.note_list_item_date);
@@ -109,32 +80,22 @@ public class NotesListView extends ListView implements Observer {
 
             view.setTag(holder);
 
-            return view;
-        }
-
-        @Override
-        public void bindView(View view, final Context context, Cursor cursor) {
-            if (cursor.isClosed())
-                return;
-            SingleNote note = ((NoteCursor) cursor).getNote();
-
-            final NoteViewHolder holder = (NoteViewHolder) view.getTag();
-
             holder.mCbComplited.setOnClickListener(new CompoundButton.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    SingleNote note = NotesList.get(context).getNote(holder.mId);
+                    SingleNote note = NotesList.get(getContext()).getNote(holder.mId);
                     if (note == null)
                         return;
 
                     note.setCompleted(!note.isCompleted());
-                    NotesList.get(context).insertOrUpdate(note);
+                    NotesList.get(getContext()).insertOrUpdate(note);
                     updateComplited(holder, note.isCompleted());
                 }
             });
 
 
-            holder.mId = note.getId();
+            SingleNote note = mCategory.getNotes().get(position);
+            holder.mId = note.getID();
             String title = note.getSingleLineTitle();
             holder.mTvTitle.setText(title);
             holder.mTvDesc.setText(note.getSingleLineDescription());
@@ -142,7 +103,10 @@ public class NotesListView extends ListView implements Observer {
             holder.mTvDate.setText(note.getStringDate());
 
             updateComplited(holder, note.isCompleted());
+
+            return view;
         }
+
 
         private void updateComplited(NoteViewHolder holder, boolean aIsComplited) {
             int flags = holder.mTvTitle.getPaintFlags();
@@ -167,8 +131,8 @@ public class NotesListView extends ListView implements Observer {
                 mId = -1;
             }
         }
-
     }
+
 
 //    private class HandlerExtension extends Handler {
 //        private final WeakReference<NotesListView> mNotesListView;
@@ -185,34 +149,5 @@ public class NotesListView extends ListView implements Observer {
 //            currentListView.refreshList();
 //        }
 //    }
-
-    private class NoteListLoaderCallbacks implements LoaderManager.LoaderCallbacks<Cursor> {
-        @Override
-        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            long categoryId = 1;
-            if (args != null)
-                categoryId = args.getLong(cstArgsLoaderCatetoryId);
-            return new NoteListCursorLoader(getContext(), categoryId);
-        }
-
-        @Override
-        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            NoteCursorAdapter adapter = (NoteCursorAdapter) getAdapter();
-            if (adapter == null) {
-                adapter = new NoteCursorAdapter(getContext(), (NoteCursor) data);
-                setAdapter(adapter);
-            }
-            else
-                adapter.swapCursor(data);
-        }
-
-        @Override
-        public void onLoaderReset(Loader<Cursor> loader) {
-            NoteCursorAdapter adapter = (NoteCursorAdapter) getAdapter();
-            if (adapter != null)
-                adapter.swapCursor(null);
-        }
-    }
-
 
 }
