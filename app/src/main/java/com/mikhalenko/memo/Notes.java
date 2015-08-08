@@ -60,7 +60,7 @@ public class Notes extends ArrayList<SingleNote> {
         return null;
     }
 
-    public void deleteNotValid(Vector<Long> aValidIDs) {
+    public void deleteInvalid(Vector<Long> aValidIDs) {
         Iterator<SingleNote> it = iterator();
         while (it.hasNext()) {
             SingleNote note = it.next();

@@ -37,7 +37,6 @@ public class NotesList extends Observable {
         CategoryCursor categoryCursor = mDbHelper.queryCategories();
         if (categoryCursor.isBeforeFirst() && categoryCursor.isAfterLast())
             return;
-//        mCategories.clear();
         Vector<Long> validCategories = new Vector<>();
         categoryCursor.moveToFirst();
         do {
@@ -70,7 +69,7 @@ public class NotesList extends Observable {
                     wNote.copyFrom(note);
                 validIDs.add(note.getID());
             } while (noteCursor.moveToNext());
-            wCategory.getNotes().deleteNotValid(validIDs);
+            wCategory.getNotes().deleteInvalid(validIDs);
             wCategory.getNotes().sortList(mPrefs.getSortType(), mPrefs.isComplitedAtTheEnd());
             noteCursor.close();
         } while (categoryCursor.moveToNext());

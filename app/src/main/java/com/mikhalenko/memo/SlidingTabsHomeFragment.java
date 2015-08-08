@@ -164,12 +164,12 @@ public class SlidingTabsHomeFragment extends Fragment {
     private void actEdit(long id) {
         FragmentManager manager = getFragmentManager();
 
-        Category category = NotesList.get(getActivity()).getCategoryByPos(mViewPager.getCurrentItem());
+        Category category = NotesList.get(getActivity()).getCategoriesList().get(mViewPager.getCurrentItem());
         Fragment fragment = EditItemFragment.newInstance(id, category.getID());
 
         FragmentTransaction transaction = manager.beginTransaction();
-        transaction.addToBackStack(null);
-        transaction.replace(R.id.container, fragment);
+        transaction.addToBackStack(fragment.toString());
+        transaction.replace(R.id.container, fragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.commit();
     }
 
@@ -191,7 +191,6 @@ public class SlidingTabsHomeFragment extends Fragment {
 
         @Override
         public CharSequence getPageTitle(int position) {
-//            Category category = NotesList.get(getActivity()).getCategoryByPos(position);
             Category category = NotesList.get(getActivity()).getCategoriesList().get(position);
             if (category != null)
                 return category.getName();
@@ -201,7 +200,6 @@ public class SlidingTabsHomeFragment extends Fragment {
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-//            NotesListView view = new NotesListView(getActivity(), position, getLoaderManager());
             Category category = NotesList.get(getActivity()).getCategoriesList().get(position);
             NotesListView view = new NotesListView(getActivity(), category);
 

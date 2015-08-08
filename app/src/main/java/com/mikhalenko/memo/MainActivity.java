@@ -20,6 +20,14 @@ public class MainActivity extends AppCompatActivity
     private CharSequence mTitle;
 
     @Override
+    public void onBackPressed() {
+//        if (getFragmentManager().getBackStackEntryCount() != 0)
+//            getFragmentManager().popBackStackImmediate();
+//        else
+            super.onBackPressed();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
