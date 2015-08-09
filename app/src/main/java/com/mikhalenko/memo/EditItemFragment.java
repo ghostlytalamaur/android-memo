@@ -2,14 +2,14 @@ package com.mikhalenko.memo;
 
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.LoaderManager;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.Loader;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -67,7 +67,7 @@ public class EditItemFragment extends Fragment {
         if ((noteId != -1) && (savedInstanceState == null)) {
             Bundle args = new Bundle();
             args.putLong(EXTRA_NOTE_ID, noteId);
-            LoaderManager lm = getLoaderManager();
+            LoaderManager lm = getActivity().getSupportLoaderManager();
             lm.initLoader(LOADER_NOTE_LOAD + (int) noteId, args, new NoteLoaderCallbacks());
         } else if ((noteId == -1) && (savedInstanceState == null)) {
             mNote = new SingleNote();
@@ -93,7 +93,7 @@ public class EditItemFragment extends Fragment {
         mBtnDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fm = getActivity().getFragmentManager();
+                FragmentManager fm = getActivity().getSupportFragmentManager();
                 DatePickerFragment dlg = DatePickerFragment.newInstance(mNote.getDate());
                 dlg.setTargetFragment(EditItemFragment.this, REQUEST_DATE);
                 dlg.show(fm, DIALOG_DATE);
@@ -136,7 +136,7 @@ public class EditItemFragment extends Fragment {
     }
 
     private void updateUI() {
-        if (mNote != null) {
+        if (mNote != null && mEdtTitle  != null && mEdtDesc != null && mBtnDate != null) {
             mEdtTitle.setText(mNote.getTitle());
             mEdtDesc.setText(mNote.getDescription());
             mBtnDate.setText(mNote.getStringDate());

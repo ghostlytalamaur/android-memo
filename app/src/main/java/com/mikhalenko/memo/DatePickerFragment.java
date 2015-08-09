@@ -1,12 +1,12 @@
 package com.mikhalenko.memo;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.DatePicker;
@@ -18,12 +18,6 @@ import java.util.GregorianCalendar;
 public class DatePickerFragment extends DialogFragment {
 
     public static final String EXTRA_DATE = "extra_date";
-
-    private static final String EXTRA_YEAR = "extra_year";
-    private static final String EXTRA_MONTH = "extra_month";
-    private static final String EXTRA_DAY = "extra_day";
-    private static final String EXTRA_HOUR = "extra_hour";
-    private static final String EXTRA_MIN = "extra_min";
 
     private long mDate;
 

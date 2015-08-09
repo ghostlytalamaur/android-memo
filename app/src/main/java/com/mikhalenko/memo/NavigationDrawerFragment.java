@@ -1,12 +1,12 @@
 package com.mikhalenko.memo;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -130,7 +130,7 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
 //                    The user manually opened the drawer; store this flag to prevent auto-showing
 //                    the navigation drawer automatically in the future.
                     mUserLearnedDrawer = true;
-                    // TODO: use Prefs
+
                     SharedPreferences sp = PreferenceManager
                             .getDefaultSharedPreferences(getActivity());
                     sp.edit().putBoolean(PREF_USER_LEARNED_DRAWER, true).apply();
@@ -155,24 +155,27 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
         });
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-        getActivity().getFragmentManager().addOnBackStackChangedListener(this);
+        getActivity().getSupportFragmentManager().addOnBackStackChangedListener(this);
         selectItem(mCurrentSelectedPosition);
         onBackStackChanged();
     }
 
     private void hideIME() {
         InputMethodManager inputMethodManager = (InputMethodManager) getActivity().
-                getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE);
+                getSystemService(Activity.INPUT_METHOD_SERVICE);
         if (getActivity().getCurrentFocus() != null)
             inputMethodManager.hideSoftInputFromWindow(
                     getActivity().getCurrentFocus().getWindowToken(), 0);
     }
 
     private void selectItem(int position) {
-        mCurrentSelectedPosition = position;
-        if (mDrawerListView != null) {
+        if (mDrawerListView != null &&
+                !getResources().getStringArray(R.array.menu_titles)[position].equals(
+                        getResources().getString(R.string.settings))) {
+            mCurrentSelectedPosition = position;
             mDrawerListView.setItemChecked(position, true);
-        }
+        } else if (mDrawerListView != null)
+            mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
@@ -227,15 +230,13 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
         if (mDrawerToggle.isDrawerIndicatorEnabled() &&
                 mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
-        } else if (item.getItemId() == android.R.id.home && isDrawerOpen() ) {
+        } else if (item.getItemId() == android.R.id.home && isDrawerOpen()) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
             return true;
-        } else if (item.getItemId() == android.R.id.home
-                && getActivity().getFragmentManager().popBackStackImmediate()) {
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
+        } else
+            return item.getItemId() == android.R.id.home &&
+                    getActivity().getSupportFragmentManager().popBackStackImmediate() ||
+                    super.onOptionsItemSelected(item);
     }
 
     /**
@@ -253,7 +254,7 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
     public void onBackStackChanged() {
         hideIME();
         if (getActionBar() == null) return;
-        int backStackCount = getActivity().getFragmentManager().getBackStackEntryCount();
+        int backStackCount = getActivity().getSupportFragmentManager().getBackStackEntryCount();
         mDrawerToggle.setDrawerIndicatorEnabled(backStackCount == 0);
     }
 

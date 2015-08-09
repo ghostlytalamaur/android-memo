@@ -3,11 +3,11 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-
+    <string name="settings">"Settings"</string>
     <string-array name="menu_titles">
         <item>Home</item>
         <item>Categories</item>
-        <item>Settings</item>
+        <item>@string/settings</item>
         <item>About</item>
     </string-array>
 
@@ -55,4 +55,5 @@
     <string name="pref_save_last_category_key">save_last_category</string>
     <string name="pref_save_last_category_title">Save last category</string>
     <string name="pref_save_last_category_summary">Restore last accessed category on startup</string>
+    <string name="title_prefs">Settings</string>
 </resources>

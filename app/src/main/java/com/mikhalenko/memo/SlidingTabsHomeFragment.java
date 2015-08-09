@@ -1,15 +1,15 @@
 package com.mikhalenko.memo;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,7 +24,6 @@ import java.util.Observer;
 
 public class SlidingTabsHomeFragment extends Fragment {
 
-    private SlidingTabLayout mSlidingTabLayout;
     private ViewPager mViewPager;
     private OnFragmentInteractionListener mListener;
     private static final String cstStateCurIndex = "currentTabIndex";
@@ -104,8 +103,8 @@ public class SlidingTabsHomeFragment extends Fragment {
         mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
         mViewPager.setAdapter(new CategoryPageAdapter());
 
-        mSlidingTabLayout = (SlidingTabLayout) view.findViewById(R.id.sliding_tabs);
-        mSlidingTabLayout.setViewPager(mViewPager);
+        SlidingTabLayout slidingTabLayout = (SlidingTabLayout) view.findViewById(R.id.sliding_tabs);
+        slidingTabLayout.setViewPager(mViewPager);
         if (savedInstanceState != null)
             mViewPager.setCurrentItem(savedInstanceState.getInt(cstStateCurIndex, 0));
         else {
@@ -161,16 +160,18 @@ public class SlidingTabsHomeFragment extends Fragment {
     }
 
 
-    private void actEdit(long id) {
-        FragmentManager manager = getFragmentManager();
-
+    private void actEdit(long aNoteID) {
+        if (mListener == null)
+            return;
         Category category = NotesList.get(getActivity()).getCategoriesList().get(mViewPager.getCurrentItem());
-        Fragment fragment = EditItemFragment.newInstance(id, category.getID());
-
+        Fragment fragment = EditItemFragment.newInstance(aNoteID, category.getID());
+        FragmentManager manager = getActivity().getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
-        transaction.addToBackStack(fragment.toString());
+        transaction.addToBackStack(null);
         transaction.replace(R.id.container, fragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.commit();
+
+//        mListener.replaceFragment(fragment);
     }
 
     private void actAdd() {

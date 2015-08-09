@@ -1,14 +1,16 @@
 package com.mikhalenko.memo;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 
 
 public class MainActivity extends AppCompatActivity
@@ -29,10 +31,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mTitle = getTitle();
-        mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().
+        mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager().
                 findFragmentById(R.id.navigation_drawer);
 
         // Set up the drawer.
@@ -47,7 +50,6 @@ public class MainActivity extends AppCompatActivity
         Fragment curFragment;
         switch (position) {
             case 0: {
-                // home
                 curFragment = new SlidingTabsHomeFragment();
                 break;
             }
@@ -56,9 +58,10 @@ public class MainActivity extends AppCompatActivity
                 break;
             }
             case 2: {
-                curFragment = new PrefsFragment();
-                break;
-//                PrefsFragment fragment = new PrefsFragment();
+                startActivity(new Intent(this, PrefsActivity.class));
+                return;
+//                curFragment = new PrefsFragment();
+//                break;
             }
             case 3: {
                 curFragment = AboutFragment.newInstance();
@@ -72,7 +75,7 @@ public class MainActivity extends AppCompatActivity
         if (curFragment == null)
             return;
 
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         int backStackCount = fragmentManager.getBackStackEntryCount();
         if (backStackCount > 0) {
@@ -93,6 +96,7 @@ public class MainActivity extends AppCompatActivity
     public void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar == null) return;
+        actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayUseLogoEnabled(true);
         actionBar.setTitle(mTitle);
@@ -125,5 +129,14 @@ public class MainActivity extends AppCompatActivity
     public void onFragmentInteraction(String s){
         mTitle = s;
         restoreActionBar();
+    }
+
+    @Override
+    public void replaceFragment(Fragment aFragment) {
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.addToBackStack(null);
+        transaction.replace(R.id.container, aFragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.commit();
     }
 }
