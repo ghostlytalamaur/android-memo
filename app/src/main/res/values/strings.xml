@@ -56,4 +56,7 @@
     <string name="pref_save_last_category_title">Save last category</string>
     <string name="pref_save_last_category_summary">Restore last accessed category on startup</string>
     <string name="title_prefs">Settings</string>
+    <string name="notify_saving_note_ok">Note saved</string>
+    <string name="notify_saving_note_error">Error saving note</string>
+    <string name="title_about">About</string>
 </resources>

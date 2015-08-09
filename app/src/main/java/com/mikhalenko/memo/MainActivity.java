@@ -8,8 +8,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.Window;
 
 
@@ -22,18 +22,12 @@ public class MainActivity extends AppCompatActivity
     private CharSequence mTitle;
 
     @Override
-    public void onBackPressed() {
-//        if (getFragmentManager().getBackStackEntryCount() != 0)
-//            getFragmentManager().popBackStackImmediate();
-//        else
-            super.onBackPressed();
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
+
         mTitle = getTitle();
         mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager().
                 findFragmentById(R.id.navigation_drawer);
@@ -60,8 +54,6 @@ public class MainActivity extends AppCompatActivity
             case 2: {
                 startActivity(new Intent(this, PrefsActivity.class));
                 return;
-//                curFragment = new PrefsFragment();
-//                break;
             }
             case 3: {
                 curFragment = AboutFragment.newInstance();
@@ -75,22 +67,9 @@ public class MainActivity extends AppCompatActivity
         if (curFragment == null)
             return;
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        int backStackCount = fragmentManager.getBackStackEntryCount();
-        if (backStackCount > 0) {
-            fragmentManager.popBackStackImmediate();
-        }
-        transaction.replace(R.id.container, curFragment);
-        transaction.commit();
-        onSectionAttached(position);
-    }
-
-    public void onSectionAttached(int position) {
-        if (position == -1)
-            position = 0;
-        mTitle = getResources().getStringArray(R.array.menu_titles)[position];
-        restoreActionBar();
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0)
+            getSupportFragmentManager().popBackStackImmediate();
+        replaceFragment(curFragment, false);
     }
 
     public void restoreActionBar() {
@@ -101,7 +80,6 @@ public class MainActivity extends AppCompatActivity
         actionBar.setDisplayUseLogoEnabled(true);
         actionBar.setTitle(mTitle);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -116,26 +94,17 @@ public class MainActivity extends AppCompatActivity
         return super.onCreateOptionsMenu(menu);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    //TODO: implement onFragmentInteraction. See CatManFragment.java
     public void onFragmentInteraction(String s){
         mTitle = s;
         restoreActionBar();
     }
 
     @Override
-    public void replaceFragment(Fragment aFragment) {
+    public void replaceFragment(Fragment aFragment, boolean aNeedAddToBackStack) {
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
-        transaction.addToBackStack(null);
+        if (aNeedAddToBackStack)
+            transaction.addToBackStack(null);
         transaction.replace(R.id.container, aFragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.commit();
     }

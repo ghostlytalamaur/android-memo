@@ -5,8 +5,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
@@ -145,7 +143,7 @@ public class SlidingTabsHomeFragment extends Fragment {
     }
 
     private boolean actDeleteAll() {
-        final Category category = NotesList.get(getActivity()).getCategoryByPos(mViewPager.getCurrentItem());
+        final Category category = NotesList.get(getActivity()).getCategoriesList().get(mViewPager.getCurrentItem());
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(R.string.alert_msg_delete_all);
         builder.setPositiveButton(R.string.alert_btn_delete, new DialogInterface.OnClickListener() {
@@ -165,13 +163,7 @@ public class SlidingTabsHomeFragment extends Fragment {
             return;
         Category category = NotesList.get(getActivity()).getCategoriesList().get(mViewPager.getCurrentItem());
         Fragment fragment = EditItemFragment.newInstance(aNoteID, category.getID());
-        FragmentManager manager = getActivity().getSupportFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-        transaction.addToBackStack(null);
-        transaction.replace(R.id.container, fragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.commit();
-
-//        mListener.replaceFragment(fragment);
+        mListener.replaceFragment(fragment, true);
     }
 
     private void actAdd() {
@@ -182,7 +174,7 @@ public class SlidingTabsHomeFragment extends Fragment {
 
         @Override
         public int getCount() {
-            return NotesList.get(getActivity()).getCategoriesList().size();
+            return NotesList.get(getActivity()).getCategoriesCount();
         }
 
         @Override

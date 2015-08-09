@@ -124,29 +124,10 @@ public class CatManFragment extends ListFragment implements Observer {
             case R.id.action_add_category:
                 editCategory(-1);
                 return true;
-//            case R.id.action_delete_all_categories:
-//                return actDeleteAll();
         }
 
         return super.onOptionsItemSelected(item);
     }
-
-//    private boolean actDeleteAll() {
-/*
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(R.string.alert_msg_delete_all);
-        builder.setPositiveButton(R.string.alert_btn_delete, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                NotesList.get(getActivity()).deleteAll();
-            }
-        });
-        builder.setNegativeButton(android.R.string.cancel, null);
-        builder.create().show();
-        return true;
-*/
-//        return false;
-//    }
 
     @Override
     public void onAttach(Activity activity) {

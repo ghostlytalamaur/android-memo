@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.os.Message;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Vector;
 
@@ -24,7 +23,7 @@ public class NotesList extends Observable {
         mCategories = new CategoryList();
         mHandler = new HandlerExtension(this);
         mPrefs = new Prefs(appContext);
-        initList();
+        refreshList();
     }
 
     public static NotesList get(Context appContext) {
@@ -33,7 +32,7 @@ public class NotesList extends Observable {
         return sNotesList;
     }
 
-    private void initList() {
+    private void refreshList() {
         CategoryCursor categoryCursor = mDbHelper.queryCategories();
         if (categoryCursor.isBeforeFirst() && categoryCursor.isAfterLast())
             return;
@@ -77,7 +76,7 @@ public class NotesList extends Observable {
         categoryCursor.close();
     }
 
-    public ArrayList<Category> getCategoriesList() {
+    public CategoryList getCategoriesList() {
         return mCategories;
     }
     public SingleNote getNote(long id) {
@@ -91,10 +90,6 @@ public class NotesList extends Observable {
         notifyUIListeners();
         return res;
 
-    }
-
-    public NoteCursor getNotes() {
-        return mDbHelper.queryNotes();
     }
 
     public NoteCursor getNotesFromCategory(long categoryId) {
@@ -140,13 +135,8 @@ public class NotesList extends Observable {
         return res;
     }
 
-    public void deleteAll() {
-        mDbHelper.deleteAll();
-        notifyUIListeners();
-    }
-
     private void notifyUIListeners() {
-        initList();
+        refreshList();
         setChanged();
         mHandler.sendMessage(new Message());
     }
@@ -157,22 +147,20 @@ public class NotesList extends Observable {
     }
 
     public int getCategoriesCount() {
-        CategoryCursor cursor = getCategories();
-        int count = cursor.getCount();
-        cursor.close();
-        return count;
+        return mCategories.size();
     }
 
-    private class HandlerExtension extends Handler {
-        private final WeakReference<NotesList> mNotesList;
+    private static class HandlerExtension extends Handler {
+        private final WeakReference<NotesList> mReference;
 
         HandlerExtension(NotesList list) {
-            mNotesList = new WeakReference<>(list);
+            mReference = new WeakReference<>(list);
         }
 
         @Override
         public void handleMessage(Message msg) {
-            mNotesList.get().notifyObservers();
+            if (mReference.get() != null)
+                mReference.get().notifyObservers();
         }
     }
 }

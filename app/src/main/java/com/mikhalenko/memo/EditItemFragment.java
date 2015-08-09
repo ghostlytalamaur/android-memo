@@ -28,7 +28,6 @@ public class EditItemFragment extends Fragment {
     private static final String DIALOG_DATE = "date_dialog";
 
     private static final int REQUEST_DATE = 0;
-    private static final int LOADER_NOTE_LOAD = 10;
     private static final int LOADER_NOTE_SAVE = 11;
     private SingleNote mNote;
     private EditText mEdtTitle;
@@ -62,14 +61,13 @@ public class EditItemFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        long noteId = getArguments().getLong(EXTRA_NOTE_ID, -1);
+        long noteID = getArguments().getLong(EXTRA_NOTE_ID, -1);
+        long categoryID = getArguments().getLong(EXTRA_CATEGORY_ID, 0);
 
-        if ((noteId != -1) && (savedInstanceState == null)) {
-            Bundle args = new Bundle();
-            args.putLong(EXTRA_NOTE_ID, noteId);
-            LoaderManager lm = getActivity().getSupportLoaderManager();
-            lm.initLoader(LOADER_NOTE_LOAD + (int) noteId, args, new NoteLoaderCallbacks());
-        } else if ((noteId == -1) && (savedInstanceState == null)) {
+        if ((noteID != -1) && (savedInstanceState == null)) {
+            mNote = NotesList.get(getActivity()).
+                    getCategoriesList().getByID(categoryID).getNotes().getByID(noteID);
+        } else if ((noteID == -1) && (savedInstanceState == null)) {
             mNote = new SingleNote();
             mNote.setCategoryID(getArguments().getLong(EXTRA_CATEGORY_ID, 1));
         }
@@ -227,9 +225,9 @@ public class EditItemFragment extends Fragment {
     private void notifySaved(boolean isSaved) {
         String msg;
         if (isSaved)
-            msg = "Note saved!";
+            msg = getResources().getString(R.string.notify_saving_note_ok);
         else
-            msg = "Error saving note!";
+            msg = getResources().getString(R.string.notify_saving_note_error);
         Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
     }
 
@@ -241,9 +239,9 @@ public class EditItemFragment extends Fragment {
         }
 
         @Override
-        public void onLoadFinished(Loader<SingleNote> loader, SingleNote data) {
-            mNote = data;
-            notifySaved(data != null);
+        public void onLoadFinished(Loader<SingleNote> loader, SingleNote aNote) {
+            mNote = aNote;
+            notifySaved((aNote != null) && aNote.getID() != -1);
             updateUI();
         }
 
@@ -252,24 +250,4 @@ public class EditItemFragment extends Fragment {
 
         }
     }
-
-    private class NoteLoaderCallbacks implements LoaderManager.LoaderCallbacks<SingleNote> {
-
-        @Override
-        public Loader<SingleNote> onCreateLoader(int id, Bundle args) {
-            return new NoteLoader(getActivity(), args.getLong(EXTRA_NOTE_ID));
-        }
-
-        @Override
-        public void onLoadFinished(Loader<SingleNote> loader, SingleNote note) {
-            mNote = note;
-            updateUI();
-        }
-
-        @Override
-        public void onLoaderReset(Loader<SingleNote> loader) {
-        }
-    }
-
-
 }
