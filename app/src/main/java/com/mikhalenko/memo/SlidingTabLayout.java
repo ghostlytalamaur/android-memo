@@ -13,6 +13,9 @@ import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 
+import java.util.Observable;
+import java.util.Observer;
+
 /**
  * To be used with ViewPager to provide a tab indicator component which give constant feedback as to
  * the user's scroll progress.
@@ -29,7 +32,18 @@ import android.widget.TextView;
  * The views used as tabs can be customized by calling {@link #setCustomTabView(int, int)},
  * providing the layout ID of your custom layout.
  */
-public class SlidingTabLayout extends HorizontalScrollView {
+public class SlidingTabLayout extends HorizontalScrollView implements Observer {
+
+    @Override
+    public void update(Observable observable, Object data) {
+        mTabStrip.removeAllViews();
+
+        if (mViewPager != null) {
+            mViewPager.addOnPageChangeListener(new InternalViewPagerListener());
+            populateTabStrip();
+        }
+
+    }
 
     /**
      * Allows complete control over the colors drawn in the tab layout. Set with
@@ -143,7 +157,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
 
         mViewPager = viewPager;
         if (viewPager != null) {
-            viewPager.setOnPageChangeListener(new InternalViewPagerListener());
+            viewPager.addOnPageChangeListener(new InternalViewPagerListener());
             populateTabStrip();
         }
     }

@@ -26,6 +26,7 @@ public class SlidingTabsHomeFragment extends Fragment implements Observer {
     private ViewPager mViewPager;
     private OnFragmentInteractionListener mListener;
     private static final String cstStateCurIndex = "currentTabIndex";
+    private SlidingTabLayout mSlidingTabLayout;
 
     @Override
     public void onResume() {
@@ -103,8 +104,10 @@ public class SlidingTabsHomeFragment extends Fragment implements Observer {
         mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
         mViewPager.setAdapter(new CategoryPageAdapter());
 
-        SlidingTabLayout slidingTabLayout = (SlidingTabLayout) view.findViewById(R.id.sliding_tabs);
-        slidingTabLayout.setViewPager(mViewPager);
+        mSlidingTabLayout = (SlidingTabLayout) view.findViewById(R.id.sliding_tabs);
+
+        mSlidingTabLayout.setViewPager(mViewPager);
+        NotesList.get(getActivity()).addObserver(mSlidingTabLayout);
         if (savedInstanceState != null)
             mViewPager.setCurrentItem(savedInstanceState.getInt(cstStateCurIndex, 0));
         else {
