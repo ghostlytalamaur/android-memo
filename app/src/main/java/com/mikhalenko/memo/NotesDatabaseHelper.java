@@ -6,10 +6,11 @@ import android.database.Cursor;
 import android.database.CursorWrapper;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class NotesDatabaseHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "notes_database.db";
+    public static final String DATABASE_NAME = "notes_database.db";
     private static final int DATABASE_VERSION = 1;
 
     private static final String NOTES_TABLE = "notes_table";
@@ -101,8 +102,16 @@ public class NotesDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean deleteCategory(long id) {
-        return (getWritableDatabase().delete(CATEGORY_TABLE, CATEGORY_ID + "=?",
-                new String[] { String.valueOf(id) })) > 0;
+        try {
+            return (getWritableDatabase().delete(CATEGORY_TABLE, CATEGORY_ID + "=?",
+                    new String[]{String.valueOf(id)})) > 0;
+        }
+        catch (Exception e) {
+            Log.d(Consts.LOGCAT_TAG, e.toString());
+            Log.d(Consts.LOGCAT_TAG, e.getMessage());
+        }
+        return false;
+
     }
 
 

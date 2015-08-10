@@ -2,11 +2,15 @@ package com.mikhalenko.memo;
 
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NavUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.Toast;
 
 public class PrefsActivity extends AppCompatPreferenceActivity {
     @Override
@@ -32,9 +36,49 @@ public class PrefsActivity extends AppCompatPreferenceActivity {
 
     public static class PrefsFragment extends PreferenceFragment {
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             addPreferencesFromResource(R.xml.preferences);
-            return super.onCreateView(inflater, container, savedInstanceState);
+
+            View v = super.onCreateView(inflater, container, savedInstanceState);
+
+            Button btnRestore = new Button(v.getContext());
+            btnRestore.setId(R.id.btnRestore);
+            btnRestore.setText(R.string.btn_restore);
+            btnRestore.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    BackupAssistant assistant = new BackupAssistant();
+                    String msg;
+                    if (assistant.RestoreDB()) {
+                        msg = "Restore complited";
+                        NotesList.get(getActivity()).dataChanged();
+                    }
+                    else
+                        msg = "Restore failed";
+                    Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            Button btnBackup = new Button(v.getContext());
+            btnBackup.setId(R.id.btnBackup);
+            btnBackup.setText(R.string.btn_backup);
+            btnBackup.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    BackupAssistant assistant = new BackupAssistant();
+                    String msg;
+                    if (assistant.BackupDB())
+                        msg = "Backup complited";
+                    else
+                        msg = "Backup failed";
+                    Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            ((ListView) (v.findViewById(android.R.id.list))).addHeaderView(btnBackup);
+            ((ListView) (v.findViewById(android.R.id.list))).addHeaderView(btnRestore);
+            return v;
+//            return super.onCreateView(inflater, container, savedInstanceState);
         }
     }
 

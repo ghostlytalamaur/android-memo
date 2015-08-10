@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="note_pager" type="id"/>
+    <item name="btnRestore" type="id"/>
+    <item name="btnBackup" type="id"/>
 </resources>

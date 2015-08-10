@@ -59,4 +59,6 @@
     <string name="notify_saving_note_ok">Note saved</string>
     <string name="notify_saving_note_error">Error saving note</string>
     <string name="title_about">About</string>
+    <string name="btn_backup">Backup on SD card</string>
+    <string name="btn_restore">Restore from SD card</string>
 </resources>

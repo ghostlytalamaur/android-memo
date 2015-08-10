@@ -17,10 +17,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
+import java.util.Observable;
 import java.util.Observer;
 
 
-public class SlidingTabsHomeFragment extends Fragment {
+public class SlidingTabsHomeFragment extends Fragment implements Observer {
 
     private ViewPager mViewPager;
     private OnFragmentInteractionListener mListener;
@@ -37,6 +38,7 @@ public class SlidingTabsHomeFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        NotesList.get(getActivity()).deleteObserver(this);
     }
 
     @Override
@@ -110,6 +112,7 @@ public class SlidingTabsHomeFragment extends Fragment {
             if (prefs.isNeedSaveLastCategory())
                 mViewPager.setCurrentItem(prefs.getLastCategoryIndex());
         }
+        NotesList.get(getActivity()).addObserver(this);
     }
 
     private long getNoteID(int position) {
@@ -168,6 +171,12 @@ public class SlidingTabsHomeFragment extends Fragment {
 
     private void actAdd() {
         actEdit(-1);
+    }
+
+    @Override
+    public void update(Observable observable, Object data) {
+        if (mViewPager.getAdapter() != null)
+            mViewPager.getAdapter().notifyDataSetChanged();
     }
 
     private class CategoryPageAdapter extends PagerAdapter {

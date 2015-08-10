@@ -32,6 +32,9 @@ public class NotesList extends Observable {
         return sNotesList;
     }
 
+    public void dataChanged() {
+        notifyUIListeners();
+    }
     private void refreshList() {
         CategoryCursor categoryCursor = mDbHelper.queryCategories();
         if (categoryCursor.isBeforeFirst() && categoryCursor.isAfterLast())
