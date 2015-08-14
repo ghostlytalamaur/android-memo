@@ -22,10 +22,10 @@
         android:id="@+id/note_list_item_title"
         android:text="Title"
         android:textStyle="bold"
-        android:textSize="@dimen/abc_text_size_title_material"
         android:layout_toLeftOf="@id/note_list_item_date"
         android:padding="@dimen/small_margin"
         android:maxLines="1"
+        android:textSize="@dimen/abc_text_size_subhead_material"
         android:layout_alignParentTop="true"
         android:layout_toEndOf="@+id/note_list_item_cbComplited"/>
 

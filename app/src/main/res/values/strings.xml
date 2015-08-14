@@ -3,15 +3,13 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="settings">"Settings"</string>
+    <string name="menu_settings">"Settings"</string>
     <string-array name="menu_titles">
         <item>Home</item>
         <item>Categories</item>
-        <item>@string/settings</item>
+        <item>@string/menu_settings</item>
         <item>About</item>
     </string-array>
-
-<!-- TODO: Remove or change this placeholder text -->
     <string name="about">Test application created to learn android programming.\n
         <b>Author:</b> Vladimir Mikhalenko</string>
     <string name="action_add">Add</string>
@@ -19,7 +17,7 @@
     <string name="name">Name</string>
     <string name="action_save">Save</string>
     <string name="description">Description</string>
-    <string name="date_time_dialog_title"></string>
+    <string name="date_time_dialog_title">Select date</string>
     <string name="alert_msg_save">Save changes?</string>
     <string name="alert_btn_no">No</string>
     <string name="alert_btn_save">Save</string>
@@ -33,7 +31,7 @@
     <string name="action_delete_all">Delete all</string>
     <string name="alert_msg_delete_all">Delete all notes?</string>
 
-    <string name="pref_autosave_not_empty_notes_key">auto_save_not_empy_notes</string>
+    <string name="pref_autosave_not_empty_notes_key">auto_save_not_empty_notes</string>
     <string name="pref_last_category_id_key">last_category_id</string>
     <string name="pref_autosave_not_empty_notes_title">Auto save</string>
     <string name="pref_autosave_not_empty_notes_summary">Auto save not empty notes</string>
@@ -48,9 +46,9 @@
     <string name="pref_sorttype_key">sort_type</string>
     <string name="pref_sorttype_title">Sorting</string>
     <string name="pref_sorttype_summary">Default sorting type in notes list</string>
-    <string name="pref_complited_at_the_end_key">complited_at_the_end</string>
-    <string name="pref_complited_at_the_end_title">Complited at the end</string>
-    <string name="pref_complited_at_the_end_summary">Show complited notes at the end of list</string>
+    <string name="pref_complited_at_the_end_key">completed_at_the_end</string>
+    <string name="pref_complited_at_the_end_title">Completed at the end</string>
+    <string name="pref_complited_at_the_end_summary">Show completed notes at the end of list</string>
     <string name="pref_sorttype_defvalue">date</string>
     <string name="pref_save_last_category_key">save_last_category</string>
     <string name="pref_save_last_category_title">Save last category</string>
@@ -61,4 +59,7 @@
     <string name="title_about">About</string>
     <string name="btn_backup">Backup on SD card</string>
     <string name="btn_restore">Restore from SD card</string>
+    <string name="menu_about">About</string>
+    <string name="menu_catman">Catman</string>
+    <string name="menu_home">Home</string>
 </resources>

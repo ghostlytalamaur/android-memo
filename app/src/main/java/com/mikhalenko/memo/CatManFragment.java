@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -14,7 +15,6 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,7 +23,6 @@ import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-
 
 import com.mikhalenko.memo.NotesDatabaseHelper.CategoryCursor;
 
@@ -58,6 +57,14 @@ public class CatManFragment extends ListFragment implements Observer {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_category_manager, container, false);
+
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editCategory(-1);
+            }
+        });
 
         getLoaderManager().initLoader(LOADER_CATEGORIES, null, mCategoryListLoaderCallbacks);
         NotesList.get(getActivity()).addObserver(this);
@@ -111,22 +118,6 @@ public class CatManFragment extends ListFragment implements Observer {
     private void refreshList() {
         Log.d(Consts.LOGCAT_TAG, "In CatManFragment.refreshList()");
         getLoaderManager().restartLoader(LOADER_CATEGORIES, null, mCategoryListLoaderCallbacks);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.catman_fragment_menu, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_add_category:
-                editCategory(-1);
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

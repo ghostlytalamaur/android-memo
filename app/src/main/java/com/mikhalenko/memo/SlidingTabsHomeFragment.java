@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -26,7 +28,6 @@ public class SlidingTabsHomeFragment extends Fragment implements Observer {
     private ViewPager mViewPager;
     private OnFragmentInteractionListener mListener;
     private static final String cstStateCurIndex = "currentTabIndex";
-    private SlidingTabLayout mSlidingTabLayout;
 
     @Override
     public void onResume() {
@@ -81,9 +82,6 @@ public class SlidingTabsHomeFragment extends Fragment implements Observer {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_add:
-                actAdd();
-                return true;
             case R.id.action_delete_all:
                 return actDeleteAll();
         }
@@ -101,13 +99,17 @@ public class SlidingTabsHomeFragment extends Fragment implements Observer {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                actAdd();
+            }
+        });
+
         mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
         mViewPager.setAdapter(new CategoryPageAdapter());
 
-        mSlidingTabLayout = (SlidingTabLayout) view.findViewById(R.id.sliding_tabs);
-
-        mSlidingTabLayout.setViewPager(mViewPager);
-        NotesList.get(getActivity()).addObserver(mSlidingTabLayout);
         if (savedInstanceState != null)
             mViewPager.setCurrentItem(savedInstanceState.getInt(cstStateCurIndex, 0));
         else {
@@ -116,6 +118,10 @@ public class SlidingTabsHomeFragment extends Fragment implements Observer {
                 mViewPager.setCurrentItem(prefs.getLastCategoryIndex());
         }
         NotesList.get(getActivity()).addObserver(this);
+
+        TabLayout tabs = (TabLayout) view.findViewById(R.id.tabLayout);
+        tabs.setTabMode(TabLayout.MODE_SCROLLABLE);
+        tabs.setupWithViewPager(mViewPager);
     }
 
     private long getNoteID(int position) {

@@ -16,11 +16,13 @@ public class Notes extends ArrayList<SingleNote> {
                 get(I).setUserSortIndex(I);
     }
 
-    private void sortByID(final boolean aComplitedAtEnd) {
+    private void sortByID(final boolean aCompletedAtEnd) {
         Collections.sort(this, new Comparator<SingleNote>() {
             @Override
             public int compare(SingleNote lhs, SingleNote rhs) {
-                int res = Boolean.compare(lhs.isCompleted(), rhs.isCompleted());
+                int res = 0;
+                if (aCompletedAtEnd)
+                    res = Boolean.compare(lhs.isCompleted(), rhs.isCompleted());
                 if (res == 0)
                     res = Long.compare(rhs.getID(), lhs.getID());
                 return res;
@@ -29,11 +31,13 @@ public class Notes extends ArrayList<SingleNote> {
         updateSortIndex(SortIndexType.sitAuto);
     }
 
-    private void sortByDate(boolean aComplitedAtEnd) {
+    private void sortByDate(final boolean aCompletedAtEnd) {
         Collections.sort(this, new Comparator<SingleNote>() {
             @Override
             public int compare(SingleNote lhs, SingleNote rhs) {
-                int res = Boolean.compare(lhs.isCompleted(), rhs.isCompleted());
+                int res = 0;
+                if (aCompletedAtEnd)
+                    res = Boolean.compare(lhs.isCompleted(), rhs.isCompleted());
                 if (res == 0)
                     res = Long.compare(lhs.getDate(), rhs.getDate());
                 return res;
@@ -42,13 +46,13 @@ public class Notes extends ArrayList<SingleNote> {
         updateSortIndex(SortIndexType.sitAuto);
     }
 
-    public void sortList(SortType aType, boolean aComplitedAtEnd) {
+    public void sortList(SortType aType, boolean aCompletedAtEnd) {
         switch (aType) {
             case ID:
-                sortByID(aComplitedAtEnd);
+                sortByID(aCompletedAtEnd);
                 break;
             case DATE:
-                sortByDate(aComplitedAtEnd);
+                sortByDate(aCompletedAtEnd);
         }
     }
 

@@ -171,7 +171,7 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
     private void selectItem(int position) {
         if (mDrawerListView != null &&
                 !getResources().getStringArray(R.array.menu_titles)[position].equals(
-                        getResources().getString(R.string.settings))) {
+                        getResources().getString(R.string.menu_settings))) {
             mCurrentSelectedPosition = position;
             mDrawerListView.setItemChecked(position, true);
         } else if (mDrawerListView != null)

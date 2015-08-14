@@ -8,10 +8,11 @@ import java.lang.ref.WeakReference;
 import java.util.Observable;
 import java.util.Vector;
 
-import static com.mikhalenko.memo.NotesDatabaseHelper.*;
+import static com.mikhalenko.memo.NotesDatabaseHelper.CategoryCursor;
+import static com.mikhalenko.memo.NotesDatabaseHelper.NoteCursor;
 
 
-public class NotesList extends Observable {
+public class NotesList extends Observable implements Prefs.OnSortTypeChangedListener{
     private static NotesList sNotesList;
     private final NotesDatabaseHelper mDbHelper;
     private HandlerExtension mHandler;
@@ -23,6 +24,7 @@ public class NotesList extends Observable {
         mCategories = new CategoryList();
         mHandler = new HandlerExtension(this);
         mPrefs = new Prefs(appContext);
+        mPrefs.setOnSortTypeChangedListener(this);
         refreshList();
     }
 
@@ -72,7 +74,7 @@ public class NotesList extends Observable {
                 validIDs.add(note.getID());
             } while (noteCursor.moveToNext());
             wCategory.getNotes().deleteInvalid(validIDs);
-            wCategory.getNotes().sortList(mPrefs.getSortType(), mPrefs.isComplitedAtTheEnd());
+            wCategory.getNotes().sortList(mPrefs.getSortType(), mPrefs.isCompletedAtTheEnd());
             noteCursor.close();
         } while (categoryCursor.moveToNext());
         mCategories.deleteNotValid(validCategories);
@@ -114,10 +116,6 @@ public class NotesList extends Observable {
         return mDbHelper.queryCategory(id);
     }
 
-    public Category getCategoryByPos(int pos) {
-        return mDbHelper.queryCategoryByPos(pos);
-    }
-
     public int getNotesInCategory(long categoryID) {
         NoteCursor c = getNotesFromCategory(categoryID);
         int res = c.getCount();
@@ -151,6 +149,17 @@ public class NotesList extends Observable {
 
     public int getCategoriesCount() {
         return mCategories.size();
+    }
+
+    @Override
+    public void sortTypeChanged(SortType newSortType, boolean completedAtTheEnd) {
+        sortList(newSortType, completedAtTheEnd);
+    }
+
+    private void sortList(SortType aSortType, boolean complitedAtTheEnd) {
+        for (Category c : mCategories) {
+            c.getNotes().sortList(aSortType, complitedAtTheEnd);
+        }
     }
 
     private static class HandlerExtension extends Handler {
