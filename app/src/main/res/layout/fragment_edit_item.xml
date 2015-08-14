@@ -2,8 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" tools:context="com.mikhalenko.memo.EditItemFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,7 +30,8 @@
         android:textStyle="bold"
         android:textSize="@dimen/abc_text_size_title_material"
         android:layout_margin="@dimen/small_margin"
-        android:id="@+id/textView"/>
+        android:id="@+id/textView"
+        />
 
     <EditText
         android:layout_width="match_parent"
@@ -42,7 +41,8 @@
         android:layout_alignRight="@+id/textView"
         android:layout_alignEnd="@+id/textView"
         android:layout_above="@+id/textView2"
-        android:gravity="top|left"/>
+        android:gravity="top|left"
+        android:autoLink="all"/>
 
     <TextView
         android:layout_width="wrap_content"

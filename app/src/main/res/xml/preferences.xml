@@ -26,4 +26,14 @@
         android:summary="@string/pref_save_last_category_summary"
         android:defaultValue="true">
     </CheckBoxPreference>
+    <Preference
+        android:key="@string/pref_backup_key"
+        android:title="@string/pref_backup_title"
+        android:summary="@string/pref_backup_summary">
+    </Preference>
+    <Preference
+        android:key="@string/pref_restore_key"
+        android:title="@string/pref_restore_title"
+        android:summary="@string/pref_restore_summary">
+    </Preference>
 </PreferenceScreen>

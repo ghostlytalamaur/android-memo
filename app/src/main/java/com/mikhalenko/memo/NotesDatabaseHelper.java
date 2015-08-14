@@ -120,11 +120,6 @@ public class NotesDatabaseHelper extends SQLiteOpenHelper {
                 new String[] { String.valueOf(id) })) > 0;
     }
 
-    public void deleteAll() {
-        SQLiteDatabase db = getWritableDatabase();
-        db.delete(NOTES_TABLE, null, null);
-    }
-
     public SingleNote queryNote(long id) {
         Cursor wrapped = getReadableDatabase().query(NOTES_TABLE,
                 null,
@@ -155,12 +150,6 @@ public class NotesDatabaseHelper extends SQLiteOpenHelper {
         return category;
     }
 
-    public NoteCursor queryNotes() {
-        Cursor cursor = getReadableDatabase().query(NOTES_TABLE,
-                null, null, null, null, null, NOTE_ID + " asc");
-        return new NoteCursor(cursor);
-    }
-
     public NoteCursor queryNotesFromCategory(long categoryId) {
         Cursor cursor = getReadableDatabase().query(NOTES_TABLE,
                 null,
@@ -174,18 +163,6 @@ public class NotesDatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = getReadableDatabase().query(CATEGORY_TABLE,
                 null, null, null, null, null, CATEGORY_ID + " asc");
         return new CategoryCursor(cursor);
-    }
-
-    public Category queryCategoryByPos(int pos) {
-        if (pos < 0)
-            return null;
-        CategoryCursor cursor = queryCategories();
-        if (pos >= cursor.getCount())
-            return null;
-        cursor.moveToPosition(pos);
-        Category category = cursor.getCategory();
-        cursor.close();
-        return category;
     }
 
     public int deleteAllFromCategory(long categoryId) {
